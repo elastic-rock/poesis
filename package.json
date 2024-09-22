@@ -1,0 +1,13 @@
+{
+    "dependencies": {
+        "@google-cloud/firestore": "^7.10.0",
+        "compression": "^1.7.4",
+        "express": "^4.21.0"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.10"
+    },
+    "scripts": {
+        "start": "node app.js"
+    }
+}
