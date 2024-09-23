@@ -15,6 +15,7 @@ app.use(compression());
 
 const footerPath = path.join(__dirname, "components", "footer.html");
 const indexPath = path.join(__dirname, "views", "index.html");
+const poemPath = path.join(__dirname, "views", "poem.html");
 const notFoundPath = path.join(__dirname, "views", "404.html");
 
 app.use((req, res, next) => {
@@ -37,24 +38,40 @@ app.get("/data/poem/random", async (req, res) => {
     return res.sendStatus(500);
   }  
   snapshot.forEach(doc => {
-    let data = doc.data();
-    data.id = doc.id;
-    res.json(data);
+    res.json(doc.data());
   });
 });
 
+app.get("/:author/:title", async (req, res) => {
+  const author = req.params.author;
+  const title = req.params.title;
 
-app.get("/data/poem/:id", async (req, res) => {
-  const id = req.params.id;
+  const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).get();
+  if (snapshot.empty) {
+    return res.sendStatus(404);
+  }  
+  snapshot.forEach(doc => {
+    fs.readFile(poemPath, "utf-8", (err, poemData) => {
+      if (err) {
+        return res.sendStatus(500);
+      }
+  
+      fs.readFile(footerPath, "utf-8", (err, footerData) => {
+        if (err) {
+          return res.sendStatus(500);
+        }
 
-  const doc = await db.collection("poems").doc(id).get();
-  if (!doc.exists) {
-    res.sendStatus(404);
-  } else {
-    let data = doc.data();
-    data.id = doc.id;
-    res.json(data);
-  }
+        const data = doc.data();
+    
+        let modifiedHtml = poemData.replace("{{footer}}", footerData);
+        modifiedHtml = modifiedHtml.replace("{{title}}", data.title);
+        modifiedHtml = modifiedHtml.replace("{{author}}", data.author);
+        modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
+    
+        res.send(modifiedHtml);
+      });
+    });
+  });
 });
 
 app.get("/", async (req, res) => {

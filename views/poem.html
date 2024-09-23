@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poesis</title>
+    <link href="/build.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_16_dark.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_16_light.png" media="(prefers-color-scheme: light)">
+</head>
+<body class="min-h-screen bg-neutral-900 text-white text-start">
+
+    <div class="flex flex-wrap pt-12 w-full gap-12 px-6 sm:px-20 max-w-6xl mx-auto">
+
+        <div id="poemPlaceholder" class="w-max flex-auto h-max">
+            <p id="title" class="text-3xl fade-in">{{title}}</p>
+            <p id="author" class="text-lg font-light pt-1 pb-2 fade-in">{{author}}</p>
+            <div id="poem" class="py-4 -indent-8 ps-8 fade-in">{{poem}}</div>
+        </div>
+        <div class="w-96 flex-initial">
+            <div id="sidepane" class="max-w-sm hidden fade-in">
+                <p class="text-xl">About Poesis</p>
+                <p class="py-4">Poesis is an online collection of poems featuring works of authors from all arround the world. Be surprised by a random poem or delve into the depths of our database.</p>
+            </div>
+        </div>
+    </div>
+
+    {{footer}}
+
+</body>
+</html>
