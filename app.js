@@ -13,6 +13,10 @@ const { randomInt } = require("crypto");
 const port = 3000;
 app.use(compression());
 
+const footerPath = path.join(__dirname, "components", "footer.html");
+const indexPath = path.join(__dirname, "views", "index.html");
+const notFoundPath = path.join(__dirname, "views", "404.html");
+
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-cache, public");
   res.set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'strict-dynamic' 'sha256-+WsLtgSAA4V5nkvNBFCUwS8SLpM5QoLyEkh1rP/64eo=' 'unsafe-inline' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; require-trusted-types-for 'script';");
@@ -54,13 +58,20 @@ app.get("/data/poem/:id", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
-  const htmlFilePath = path.join(__dirname, "public", "index.html");
-  fs.readFile(htmlFilePath, "utf-8", (err, htmlData) => {
+  fs.readFile(indexPath, "utf-8", (err, indexData) => {
     if (err) {
       return res.sendStatus(500);
     }
 
-    res.send(htmlData);
+    fs.readFile(footerPath, "utf-8", (err, footerData) => {
+      if (err) {
+        return res.sendStatus(500);
+      }
+  
+      let modifiedHtml = indexData.replace("{{footer}}", footerData);
+  
+      res.send(modifiedHtml);
+    });
   });
 });
 
@@ -77,13 +88,20 @@ app.get("/build.css", async (req, res) => {
 });
 
 app.use((req, res) => {
-  const htmlFilePath = path.join(__dirname, "public", "404.html");
-  fs.readFile(htmlFilePath, "utf-8", (err, htmlData) => {
+  fs.readFile(notFoundPath, "utf-8", (err, notFoundData) => {
     if (err) {
       return res.sendStatus(500);
     }
 
-    res.status(404).send(htmlData);
+    fs.readFile(footerPath, "utf-8", (err, footerData) => {
+      if (err) {
+        return res.sendStatus(500);
+      }
+
+      let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
+  
+      res.status(404).send(modifiedHtml);
+    });
   });
 });
 
