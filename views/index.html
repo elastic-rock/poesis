@@ -28,80 +28,53 @@
             </div>
         </div>
 
-        <div id="poemPlaceholder" class="w-max flex-auto h-max">
-            <p id="title" class="text-3xl"></p>
-            <p id="author" class="text-lg font-light pt-1 pb-2"></p>
-            <div id="poem" class="py-4 -indent-8 ps-8"></div>
-            <div class="py-2 h-[60px] flex flex-row gap-4">
+        <div id="poemPlaceholder" class="w-max flex-auto">
+            <p id="title" class="text-3xl h-[36px]"></p>
+            <p id="author" class="text-lg font-light pt-1 pb-2 h-[40px]"></p>
+            <div class="relative my-4 h-[312px] overflow-hidden">
+                <div class="absolute inset-0 z-20 bg-gradient-to-b from-transparent from-80% to-neutral-900"></div>
+                <div id="poem" class="relative z-10 -indent-8 ps-8"></div>
+            </div>
+            <div class="py-2 flex flex-row gap-4 h-[59px]">
                 <button id="reload" class="hidden justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in">
                     <svg class="pe-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
                         <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-70q0-17 11.5-28.5T760-800q17 0 28.5 11.5T800-760v200q0 17-11.5 28.5T760-520H560q-17 0-28.5-11.5T520-560q0-17 11.5-28.5T560-600h128q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q68 0 124.5-34.5T692-367q8-14 22.5-19.5t29.5-.5q16 5 23 21t-1 30q-41 80-117 128t-169 48Z"/>
                     </svg>
                     Reload
                 </button>
-                <button id="share" class="hidden justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in">
+                <button id="expand" class="hidden justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in">
                     <svg class="pe-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                        <path d="M680-80q-50 0-85-35t-35-85q0-6 3-28L282-392q-16 15-37 23.5t-45 8.5q-50 0-85-35t-35-85q0-50 35-85t85-35q24 0 45 8.5t37 23.5l281-164q-2-7-2.5-13.5T560-760q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-24 0-45-8.5T598-672L317-508q2 7 2.5 13.5t.5 14.5q0 8-.5 14.5T317-452l281 164q16-15 37-23.5t45-8.5q50 0 85 35t35 85q0 50-35 85t-85 35Zm0-80q17 0 28.5-11.5T720-200q0-17-11.5-28.5T680-240q-17 0-28.5 11.5T640-200q0 17 11.5 28.5T680-160ZM200-440q17 0 28.5-11.5T240-480q0-17-11.5-28.5T200-520q-17 0-28.5 11.5T160-480q0 17 11.5 28.5T200-440Zm480-280q17 0 28.5-11.5T720-760q0-17-11.5-28.5T680-800q-17 0-28.5 11.5T640-760q0 17 11.5 28.5T680-720Zm0 520ZM200-480Zm480-280Z"/>
+                        <path d="m480-453-95-95q-11-11-27.5-11T329-548q-12 12-12 28.5t12 28.5l123 123q12 12 28 12t28-12l124-124q12-12 11.5-28T631-548q-12-11-28-11.5T575-548l-95 95Zm0 373q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
                     </svg>
-                    Share
+                    Read more
                 </button>
             </div>
         </div>
         <div class="w-96 flex-initial">
             <div id="sidepane" class="max-w-sm hidden fade-in">
                 <p class="text-xl">About Poesis</p>
-                <p class="py-4">Poesis is an online collection of poems featuring works of authors from all arround the world. Be surprised by a random poem or delve into the depths of our database.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="shareDialog" class="hidden fixed inset-0 z-10 transition-opacity">
-        <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center transition-opacity px-4">
-            <div class="bg-neutral-900 p-6 rounded-lg shadow-lg w-full max-w-md">
-                <div class="flex items-center justify-between mb-6 w-full">
-                    <p class="text-lg font-semibold">Share</p>
-                    <button id="shareDialogCloseButton">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                            <path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="flex items-center justify-between py-2 px-3 w-full">
-                    <p id="sUrl" class="pe-8 text-ellipsis overflow-hidden whitespace-nowrap flex-1"></p>
-                    <button id="shareDialogCopyButton" class="rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4">
-                        Copy
-                    </button>
-                </div>
+                <p class="py-4">Poesis is an online collection of poems featuring works of authors from all around the world. Be surprised by a random poem or delve into the depths of our database.</p>
             </div>
         </div>
     </div>
 
     {{footer}}
 
-    <script>
+    <script nonce="{{nonce}}">
         const authorElement = document.getElementById("author");
         const titleElement = document.getElementById("title");
         const poemElement = document.getElementById("poem");
 
         const reloadBtn = document.getElementById("reload");
-        const shareBtn = document.getElementById("share");
+        const expandBtn = document.getElementById("expand");
         const sidepaneElement = document.getElementById("sidepane");
         const poemPlaceholder = document.getElementById("poemPlaceholder");
-
-        const shareDialogElement = document.getElementById("shareDialog");
-        const shareDialogCloseBtn = document.getElementById("shareDialogCloseButton");
-        const shareDialogCopyBtn = document.getElementById("shareDialogCopyButton");
-        const sUrlElement = document.getElementById("sUrl");
 
         const errorPlaceholder = document.getElementById("errorPlaceholder");
         const errorText = document.getElementById("errorText");
         const errorIcon = document.getElementById("errorIcon");
         const retryBtn = document.getElementById("retry");
         const errorBtns = document.getElementById("errorBtns");
-
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const shareParam = urlParams.get("share");
 
         function displayOfflineError() {
             errorText.textContent = "You are offline"
@@ -135,17 +108,11 @@
             });
             setTimeout(() => {
                 reloadBtn.classList.replace("hidden", "inline-flex");
-                shareBtn.classList.replace("hidden", "inline-flex");
+                expandBtn.classList.replace("hidden", "inline-flex");
             }, 2000);
-            sUrlElement.textContent = `https://poesis.preview.davidweis.eu/?share=${data.id}`
         }
 
         async function fetchRandomPoem() {
-            if (shareParam !== null) {
-                const url = new URL(window.location.href);
-                url.searchParams.delete("share");
-                window.history.replaceState({}, '', url.toString());
-            }
             try {
                 const response = await fetch('/data/poem/random');
                 if (!response.ok) {
@@ -162,32 +129,7 @@
             }
         }
 
-        async function fetchPoem() {
-            try {
-                const response = await fetch(`/data/poem/${shareParam}`);
-                if (!response.ok) {
-                    displayHTTPError(response.status);
-                    return
-                }
-                const data = await response.json();
-                setPoem(data);
-            } catch (error) {
-                console.error(error);
-                if (error instanceof TypeError) {
-                    displayOfflineError();
-                }
-            }
-        }
-
-        function loadPoem() {
-            if (shareParam !== null) {
-                fetchPoem();
-            } else {
-                fetchRandomPoem();
-            }
-        }
-
-        loadPoem();
+        fetchRandomPoem();
 
         setTimeout(() => {
             sidepaneElement.classList.remove("hidden");
@@ -195,7 +137,7 @@
 
         reloadBtn.addEventListener("click", (event) => {
             reloadBtn.classList.replace("inline-flex", "hidden");
-            shareBtn.classList.replace("inline-flex", "hidden");
+            expandBtn.classList.replace("inline-flex", "hidden");
             authorElement.textContent = "";
             authorElement.classList.remove('fade-in');
             titleElement.textContent = "";
@@ -205,25 +147,7 @@
         });
 
         retryBtn.addEventListener("click", (event) => {
-            loadPoem();
-        });
-
-        shareBtn.addEventListener("click", (event) => {
-            shareDialogElement.classList.remove("hidden");
-        });
-
-        shareDialogCloseBtn.addEventListener("click", (event) => {
-            shareDialogElement.classList.add("hidden");
-            shareDialogCopyBtn.textContent = "Copy";
-        });
-
-        shareDialogCopyBtn.addEventListener("click", async (event) => {
-            try {
-                await navigator.clipboard.writeText(sUrlElement.textContent);
-                shareDialogCopyBtn.textContent = "Copied";
-            } catch (error) {
-                console.error(error);
-            }
+            fetchRandomPoem();
         });
     </script>
 
