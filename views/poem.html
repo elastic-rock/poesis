@@ -62,7 +62,15 @@
         }, 2000);
 
         shareBtn.addEventListener("click", (event) => {
-            shareDialogElement.classList.remove("hidden");
+            if (navigator.share && navigator.userAgentData.mobile) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                })
+                .catch((error) => shareDialogElement.classList.remove("hidden");
+            } else {
+                shareDialogElement.classList.remove("hidden");
+            }
         });
 
         shareDialogCloseBtn.addEventListener("click", (event) => {
