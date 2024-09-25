@@ -14,8 +14,10 @@ const port = 3000;
 app.use(compression());
 
 const footerPath = path.join(__dirname, "components", "footer.html");
+const smallSnippetPath = path.join(__dirname, "components", "small_snippet.html");
 const indexPath = path.join(__dirname, "views", "index.html");
 const poemPath = path.join(__dirname, "views", "poem.html");
+const authorPath = path.join(__dirname, "views", "author.html");
 const notFoundPath = path.join(__dirname, "views", "404.html");
 
 app.use((req, res, next) => {
@@ -110,6 +112,54 @@ app.get("/favicon_16_light.png", async (req, res) => {
 
 app.get("/build.css", async (req, res) => {
   res.sendFile(path.join(__dirname, "public", "build.css"));
+});
+
+app.get("/:author", async (req, res) => {
+  const author = req.params.author;
+
+  const snapshot = await db.collection("poems").where("author_slug", "==", author).get();
+  if (snapshot.empty) {
+    return res.sendStatus(404);
+  }
+
+  fs.readFile(authorPath, "utf-8", (err, authorData) => {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    fs.readFile(footerPath, "utf-8", (err, footerData) => {
+      if (err) {
+        return res.sendStatus(500);
+      }
+
+      fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
+        if (err) {
+          return res.sendStatus(500);
+        }
+
+        let snippets = "";
+        let author = "";
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+
+          author = data.author;
+          let snippet = snippetData.replace("{{title}}", data.title);
+          snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
+          snippet = snippet.replace("{{author_slug}}", data.author_slug);
+          snippet = snippet.replace("{{title_slug}}", data.title_slug);
+          snippets += snippet;
+        });
+  
+        let modifiedHtml = authorData.replace("{{footer}}", footerData);
+        modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
+        modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+  
+        res.send(modifiedHtml);
+
+      });
+    });
+  });
 });
 
 app.use((req, res) => {
