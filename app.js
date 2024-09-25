@@ -73,6 +73,7 @@ app.get("/:author/:title", async (req, res) => {
         modifiedHtml = modifiedHtml.replace("{{title}}", data.title);
         modifiedHtml = modifiedHtml.replace("{{author}}", data.author);
         modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
+        modifiedHtml = modifiedHtml.replace("{{nonce}}", res.locals.nonce);
     
         res.send(modifiedHtml);
       });
