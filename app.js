@@ -75,6 +75,7 @@ app.get("/:author/:title", async (req, res) => {
         modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
         modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
         modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
+        modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
         modifiedHtml = modifiedHtml.replace("{{nonce}}", res.locals.nonce);
     
         res.send(modifiedHtml);
@@ -146,8 +147,8 @@ app.get("/:author", async (req, res) => {
           author = data.author;
           let snippet = snippetData.replace("{{title}}", data.title);
           snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
-          snippet = snippet.replace("{{author_slug}}", data.author_slug);
-          snippet = snippet.replace("{{title_slug}}", data.title_slug);
+          snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+          snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
           snippets += snippet;
         });
   

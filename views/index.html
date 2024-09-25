@@ -28,9 +28,9 @@
             </div>
         </div>
 
-        <div id="poemPlaceholder" class="w-max flex-auto">
-            <p id="title" class="text-3xl h-[36px]"></p>
-            <p id="author" class="text-lg font-light pt-1 pb-2 h-[40px]"></p>
+        <div id="poemPlaceholder" class="w-max flex flex-col flex-auto">
+            <a id="title" href="" class="text-3xl h-[36px] hover:underline decoration-from-font"></a>
+            <a id="author" href="" class="text-lg font-light pt-1 pb-2 h-[40px] hover:underline decoration-from-font"></a>
             <div class="relative my-4 h-[312px] overflow-hidden">
                 <div class="absolute inset-0 z-20 bg-gradient-to-b from-transparent from-80% to-neutral-900"></div>
                 <div id="poem" class="relative z-10 -indent-8 ps-8"></div>
@@ -110,7 +110,9 @@
                 reloadBtn.classList.replace("hidden", "inline-flex");
                 expandBtn.classList.replace("hidden", "inline-flex");
             }, 2000);
-            expandBtn.setAttribute("href", `${window.location.protocol}//${window.location.host}/${data.author_slug}/${data.title_slug}`)
+            expandBtn.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
+            titleElement.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
+            authorElement.setAttribute("href", `/${data.author_slug}`);
         }
 
         async function fetchRandomPoem() {
