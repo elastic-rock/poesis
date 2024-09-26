@@ -14,6 +14,7 @@ const port = 3000;
 app.use(compression());
 
 const footerPath = path.join(__dirname, "components", "footer.html");
+const navbarPath = path.join(__dirname, "components", "navbar.html");
 const smallSnippetPath = path.join(__dirname, "components", "small_snippet.html");
 const indexPath = path.join(__dirname, "views", "index.html");
 const poemPath = path.join(__dirname, "views", "poem.html");
@@ -69,16 +70,23 @@ app.get("/:author/:title", async (req, res) => {
           return res.sendStatus(500);
         }
 
-        const data = doc.data();
+        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
+          if (err) {
+            return res.sendStatus(500);
+          }
+      
+          const data = doc.data();
     
-        let modifiedHtml = poemData.replace("{{footer}}", footerData);
-        modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
-        modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
-        modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
-        modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
-        modifiedHtml = modifiedHtml.replace("{{nonce}}", res.locals.nonce);
-    
-        res.send(modifiedHtml);
+          let modifiedHtml = poemData.replace("{{footer}}", footerData);
+          modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
+          modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
+          modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
+          modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
+          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+      
+          res.send(modifiedHtml);
+        });
       });
     });
   });
@@ -94,11 +102,18 @@ app.get("/", async (req, res) => {
       if (err) {
         return res.sendStatus(500);
       }
-  
-      let modifiedHtml = indexData.replace("{{footer}}", footerData);
-      modifiedHtml = modifiedHtml.replace("{{nonce}}", res.locals.nonce);
-  
-      res.send(modifiedHtml);
+
+      fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
+        if (err) {
+          return res.sendStatus(500);
+        }
+    
+        let modifiedHtml = indexData.replace("{{footer}}", footerData);
+        modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+        modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+    
+        res.send(modifiedHtml);
+      });
     });
   });
 });
@@ -138,26 +153,34 @@ app.get("/:author", async (req, res) => {
           return res.sendStatus(500);
         }
 
-        let snippets = "";
-        let author = "";
+        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
+          if (err) {
+            return res.sendStatus(500);
+          }
 
-        snapshot.forEach(doc => {
-          const data = doc.data();
 
-          author = data.author;
-          let snippet = snippetData.replace("{{title}}", data.title);
-          snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
-          snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
-          snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
-          snippets += snippet;
+          let snippets = "";
+          let author = "";
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+
+            author = data.author;
+            let snippet = snippetData.replace("{{title}}", data.title);
+            snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
+            snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+            snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+            snippets += snippet;
+          });
+  
+          let modifiedHtml = authorData.replace("{{footer}}", footerData);
+          modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
+          modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+      
+          res.send(modifiedHtml);
         });
-  
-        let modifiedHtml = authorData.replace("{{footer}}", footerData);
-        modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
-        modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-  
-        res.send(modifiedHtml);
-
       });
     });
   });
@@ -174,9 +197,17 @@ app.use((req, res) => {
         return res.sendStatus(500);
       }
 
-      let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
+      fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
+        if (err) {
+          return res.sendStatus(500);
+        }
+
+        let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
+        modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+        modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
   
-      res.status(404).send(modifiedHtml);
+        res.status(404).send(modifiedHtml);
+      });
     });
   });
 });
