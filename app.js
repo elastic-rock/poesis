@@ -51,13 +51,13 @@ app.get("/data/poem/random", async (req, res) => {
   });
 });
 
-app.get("/:author/:title", async (req, res) => {
+app.get("/:author/:title", async (req, res, next) => {
   const author = req.params.author;
   const title = req.params.title;
 
   const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).get();
   if (snapshot.empty) {
-    return res.sendStatus(404);
+    return next();
   }  
   snapshot.forEach(doc => {
     fs.readFile(poemPath, "utf-8", (err, poemData) => {
@@ -130,12 +130,12 @@ app.get("/build.css", async (req, res) => {
   res.sendFile(path.join(__dirname, "public", "build.css"));
 });
 
-app.get("/:author", async (req, res) => {
+app.get("/:author", async (req, res, next) => {
   const author = req.params.author;
 
   const snapshot = await db.collection("poems").where("author_slug", "==", author).get();
   if (snapshot.empty) {
-    return res.sendStatus(404);
+    return next();
   }
 
   fs.readFile(authorPath, "utf-8", (err, authorData) => {
