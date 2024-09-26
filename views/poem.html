@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div id="shareDialog" class="hidden fixed inset-0 z-10 transition-opacity">
+    <div id="shareDialog" class="hidden fixed inset-0 z-40 transition-opacity">
         <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center transition-opacity px-4">
             <div class="bg-neutral-900 p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div class="flex items-center justify-between mb-6 w-full">
@@ -64,7 +64,7 @@
         }, 2000);
 
         shareBtn.addEventListener("click", (event) => {
-            if (navigator.share && /android|iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            if (navigator.share && /Mobi|Android|webOS|iPad|iPhone|iPod/.test(navigator.userAgent || navigator.vendor)) {
                 navigator.share({
                     title: document.title,
                     url: window.location.href
