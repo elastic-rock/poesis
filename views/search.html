@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search  - Poesis</title>
+    <link href="/build.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_16_dark.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_16_light.png" media="(prefers-color-scheme: light)">
+</head>
+<body class="min-h-screen bg-neutral-900 text-white text-start">
+
+    {{navbar}}
+
+    <div class="pt-24 px-6 sm:px-20 max-w-6xl mx-auto">
+        <p class="text-3xl pb-6 fade-in">Search results for "{{query}}"</p>
+        <div class="flex flex-wrap w-full gap-8 fade-in">{{snippets}}</div>
+    </div>
+
+    {{footer}}
+
+</body>
+</html>

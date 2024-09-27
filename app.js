@@ -19,6 +19,7 @@ const smallSnippetPath = path.join(__dirname, "components", "small_snippet.html"
 const indexPath = path.join(__dirname, "views", "index.html");
 const poemPath = path.join(__dirname, "views", "poem.html");
 const authorPath = path.join(__dirname, "views", "author.html");
+const searchPath = path.join(__dirname, "views", "search.html");
 const notFoundPath = path.join(__dirname, "views", "404.html");
 
 app.use((req, res, next) => {
@@ -39,7 +40,7 @@ app.use((req, res, next) => {
 
 app.get("/data/poem/random", async (req, res) => {
   const number = crypto.randomInt(0,2);
-  const snapshot = await db.collection("poems").where("index", "==", number).get();
+  const snapshot = await db.collection("poems").where("index", "==", number).limit(1).get();
   if (snapshot.empty) {
     return res.sendStatus(500);
   }  
@@ -55,7 +56,7 @@ app.get("/:author/:title", async (req, res, next) => {
   const author = req.params.author;
   const title = req.params.title;
 
-  const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).get();
+  const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).limit(1).get();
   if (snapshot.empty) {
     return next();
   }  
@@ -113,6 +114,66 @@ app.get("/", async (req, res) => {
         modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
         res.send(modifiedHtml);
+      });
+    });
+  });
+});
+
+app.get("/search", async (req, res) => {
+  const query = req.query.q || "";
+
+  let snapshot;
+  if (query !== "") {
+    const keywords = query.toLowerCase().split(' ');
+    snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).get();
+  }
+  
+  fs.readFile(searchPath, "utf-8", (err, searchData) => {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    fs.readFile(footerPath, "utf-8", (err, footerData) => {
+      if (err) {
+        return res.sendStatus(500);
+      }
+
+      fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
+        if (err) {
+          return res.sendStatus(500);
+        }
+
+        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
+          if (err) {
+            return res.sendStatus(500);
+          }
+
+          let snippets = "";
+
+          if (query == "") {
+            snippets = "<p>Try searching for something</p>";
+          } else if (snapshot.empty) {
+            snippets = "<p>0 Results</p>";
+          } else {
+            snapshot.forEach(doc => {
+              const data = doc.data();
+  
+              let snippet = snippetData.replace("{{title}}", data.title);
+              snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
+              snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+              snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+              snippets += snippet;
+            });
+          }
+  
+          let modifiedHtml = searchData.replace("{{footer}}", footerData);
+          modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+          modifiedHtml = modifiedHtml.replace("{{query}}", query)
+          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+      
+          res.send(modifiedHtml);
+        });
       });
     });
   });
