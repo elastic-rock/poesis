@@ -62,7 +62,8 @@
 
         function submitSearch(query) {
             if (query) {
-                window.location.href = `/search?q=${query}`;
+                const encodedQuery = encodeURIComponent(query);
+                window.location.href = `/search?q=${encodedQuery}`;
             }
         }
 
