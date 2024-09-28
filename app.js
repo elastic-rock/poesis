@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/data/poem/random", async (req, res) => {
-  const number = crypto.randomInt(0,2);
+  const number = crypto.randomInt(0,3);
   const snapshot = await db.collection("poems").where("index", "==", number).limit(1).get();
   if (snapshot.empty) {
     console.log("Empty snapshot at /data/poem/random");
@@ -93,7 +93,7 @@ app.get("/:author/:title", async (req, res, next) => {
           let modifiedHtml = poemData.replace("{{footer}}", footerData);
           modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
           modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
-          modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => `<p>${line}</p>`).join('\n'));
+          modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
           modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
           modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
           modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
@@ -185,7 +185,7 @@ app.get("/search", async (req, res) => {
               const data = doc.data();
   
               let snippet = snippetData.replace("{{title}}", data.title);
-              snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
+              snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
               snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
               snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
               snippets += snippet;
@@ -247,7 +247,7 @@ app.get("/:author", async (req, res, next) => {
 
             author = data.author;
             let snippet = snippetData.replace("{{title}}", data.title);
-            snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => `<p>${line}</p>`).join('\n'));
+            snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
             snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
             snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
             snippets += snippet;

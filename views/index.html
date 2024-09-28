@@ -104,11 +104,17 @@
             titleElement.textContent = data.title;
             titleElement.classList.add('fade-in');
             lines.forEach(line => {
-                const p = document.createElement('p');
-                p.textContent = line;
-                p.classList.add('fade-in');
-                poemElement.appendChild(p);
+                if (line.trim() === '') {
+                    const br = document.createElement('br');
+                    poemElement.appendChild(br);
+                } else {
+                    const p = document.createElement('p');
+                    p.textContent = line;
+                    p.classList.add('fade-in');
+                    poemElement.appendChild(p);
+                }
             });
+            poemElement.textContent.replace('<p class="fade-in"></p>', "<br/>");
             setTimeout(() => {
                 reloadBtn.classList.replace("hidden", "inline-flex");
                 expandBtn.classList.replace("hidden", "inline-flex");
