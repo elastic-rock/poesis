@@ -27,7 +27,7 @@ app.use((req, res, next) => {
   res.locals.nonce = nonce;
 
   res.set("Cache-Control", "no-cache, public");
-  res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' 'nonce-${nonce}' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; require-trusted-types-for 'script';`);
+  res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' 'nonce-${nonce}' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
   res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   res.set("X-Content-Type-Options", "nosniff");
   res.set("X-Frame-Options", "DENY");
@@ -37,6 +37,8 @@ app.use((req, res, next) => {
   res.removeHeader('X-Powered-By');
   next();
 });
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/data/poem/random", async (req, res) => {
   const number = crypto.randomInt(0,2);
@@ -177,18 +179,6 @@ app.get("/search", async (req, res) => {
       });
     });
   });
-});
-
-app.get("/favicon_16_dark.png", async (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "favicon_16_dark.png"));
-});
-
-app.get("/favicon_16_light.png", async (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "favicon_16_light.png"));
-});
-
-app.get("/build.css", async (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "build.css"));
 });
 
 app.get("/:author", async (req, res, next) => {
