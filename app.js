@@ -50,6 +50,7 @@ app.get("/data/poem/random", async (req, res) => {
   const number = crypto.randomInt(0,2);
   const snapshot = await db.collection("poems").where("index", "==", number).limit(1).get();
   if (snapshot.empty) {
+    console.log("Empty snapshot at /data/poem/random");
     return res.sendStatus(500);
   }  
   snapshot.forEach(doc => {
@@ -71,16 +72,19 @@ app.get("/:author/:title", async (req, res, next) => {
   snapshot.forEach(doc => {
     fs.readFile(poemPath, "utf-8", (err, poemData) => {
       if (err) {
+        console.log("Error reading poem.html");
         return res.sendStatus(500);
       }
   
       fs.readFile(footerPath, "utf-8", (err, footerData) => {
         if (err) {
+          console.log("Error reading footer.html");
           return res.sendStatus(500);
         }
 
         fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
           if (err) {
+            console.log("Error reading navbar.html");
             return res.sendStatus(500);
           }
 
@@ -106,16 +110,19 @@ app.get("/:author/:title", async (req, res, next) => {
 app.get("/", async (req, res) => {
   fs.readFile(indexPath, "utf-8", (err, indexData) => {
     if (err) {
+      console.log("Error reading index.html");
       return res.sendStatus(500);
     }
 
     fs.readFile(footerPath, "utf-8", (err, footerData) => {
       if (err) {
+        console.log("Error reading footer.html");
         return res.sendStatus(500);
       }
 
       fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
         if (err) {
+          console.log("Error reading navbar.html");
           return res.sendStatus(500);
         }
     
@@ -133,6 +140,7 @@ app.get("/search", async (req, res) => {
   const query = req.query.q.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
 
   if (query.length > 100) {
+    console.log("Search query is too long");
     return res.sendStatus(400);
   }
 
@@ -144,21 +152,25 @@ app.get("/search", async (req, res) => {
   
   fs.readFile(searchPath, "utf-8", (err, searchData) => {
     if (err) {
+      console.log("Error reading search.html");
       return res.sendStatus(500);
     }
 
     fs.readFile(footerPath, "utf-8", (err, footerData) => {
       if (err) {
+        console.log("Error reading footer.html");
         return res.sendStatus(500);
       }
 
       fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
         if (err) {
+          console.log("Error reading small_snippet.html");
           return res.sendStatus(500);
         }
 
         fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
           if (err) {
+            console.log("Error reading navbar.html");
             return res.sendStatus(500);
           }
 
@@ -198,26 +210,31 @@ app.get("/:author", async (req, res, next) => {
 
   const snapshot = await db.collection("poems").where("author_slug", "==", author).get();
   if (snapshot.empty) {
+    console.log("Empty snapshot at /:author");
     return next();
   }
 
   fs.readFile(authorPath, "utf-8", (err, authorData) => {
     if (err) {
+      console.log("Error reading author.html");
       return res.sendStatus(500);
     }
 
     fs.readFile(footerPath, "utf-8", (err, footerData) => {
       if (err) {
+        console.log("Error reading footer.html");
         return res.sendStatus(500);
       }
 
       fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
         if (err) {
+          console.log("Error reading small_snippet.html");
           return res.sendStatus(500);
         }
 
         fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
           if (err) {
+            console.log("Error reading navbar.html");
             return res.sendStatus(500);
           }
 
@@ -252,16 +269,19 @@ app.get("/:author", async (req, res, next) => {
 app.use((req, res) => {
   fs.readFile(notFoundPath, "utf-8", (err, notFoundData) => {
     if (err) {
+      console.log("Error reading 404.html");
       return res.sendStatus(500);
     }
 
     fs.readFile(footerPath, "utf-8", (err, footerData) => {
       if (err) {
+        console.log("Error reading footer.html");
         return res.sendStatus(500);
       }
 
       fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
         if (err) {
+          console.log("Error reading navbar.html");
           return res.sendStatus(500);
         }
 
