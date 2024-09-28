@@ -130,7 +130,11 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/search", async (req, res) => {
-  const query = req.query.q || "";
+  const query = req.query.q.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
+
+  if (query.length > 100) {
+    return res.sendStatus(400);
+  }
 
   let snapshot;
   if (query !== "") {
