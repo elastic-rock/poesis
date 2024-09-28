@@ -137,7 +137,7 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/search", async (req, res) => {
-  const query = req.query.q.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
+  const query = req.query.q?.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
 
   if (query.length > 100) {
     console.log("Search query is too long");
@@ -208,7 +208,7 @@ app.get("/search", async (req, res) => {
 app.get("/:author", async (req, res, next) => {
   const author = req.params.author;
 
-  const snapshot = await db.collection("poems").where("author_slug", "==", author).get();
+  const snapshot = await db.collection("poems").where("author_slug", "==", author).orderBy("read_count", "desc").get();
   if (snapshot.empty) {
     console.log("Empty snapshot at /:author");
     return next();
