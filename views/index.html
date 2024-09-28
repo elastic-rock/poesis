@@ -85,6 +85,7 @@
             errorBtns.classList.remove("hidden");
             poemPlaceholder.classList.add("hidden");
             errorPlaceholder.classList.remove("hidden");
+            sidepaneElement.classList.remove("hidden");
         }
 
         function displayHTTPError(responseCode) {
@@ -93,6 +94,7 @@
             errorBtns.classList.add("hidden");
             poemPlaceholder.classList.add("hidden");
             errorPlaceholder.classList.remove("hidden");
+            sidepaneElement.classList.remove("hidden");
         }
 
         function setPoem(data) {
@@ -114,11 +116,11 @@
                     poemElement.appendChild(p);
                 }
             });
-            poemElement.textContent.replace('<p class="fade-in"></p>', "<br/>");
+            sidepaneElement.classList.remove("hidden");
             setTimeout(() => {
                 reloadBtn.classList.replace("hidden", "inline-flex");
                 expandBtn.classList.replace("hidden", "inline-flex");
-            }, 2000);
+            }, 500);
             expandBtn.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
             titleElement.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
             authorElement.setAttribute("href", `/${data.author_slug}`);
@@ -142,10 +144,6 @@
         }
 
         fetchRandomPoem();
-
-        setTimeout(() => {
-            sidepaneElement.classList.remove("hidden");
-        }, 5000);
 
         reloadBtn.addEventListener("click", (event) => {
             reloadBtn.classList.replace("inline-flex", "hidden");
