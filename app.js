@@ -22,6 +22,12 @@ const authorPath = path.join(__dirname, "views", "author.html");
 const searchPath = path.join(__dirname, "views", "search.html");
 const notFoundPath = path.join(__dirname, "views", "404.html");
 
+function incrementReadCount(docId) {
+  db.collection("poems").doc(docId).update({
+    read_count: Firestore.FieldValue.increment(1)
+  });
+};
+
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
   res.locals.nonce = nonce;
@@ -77,7 +83,7 @@ app.get("/:author/:title", async (req, res, next) => {
           if (err) {
             return res.sendStatus(500);
           }
-      
+
           const data = doc.data();
     
           let modifiedHtml = poemData.replace("{{footer}}", footerData);
@@ -89,6 +95,8 @@ app.get("/:author/:title", async (req, res, next) => {
           modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
       
           res.send(modifiedHtml);
+
+          incrementReadCount(doc.id);
         });
       });
     });
