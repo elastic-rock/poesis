@@ -16,6 +16,7 @@ app.use(compression());
 const footerPath = path.join(__dirname, "components", "footer.html");
 const navbarPath = path.join(__dirname, "components", "navbar.html");
 const smallSnippetPath = path.join(__dirname, "components", "small_snippet.html");
+const searchResultPath = path.join(__dirname, "components", "search_result.html");
 const indexPath = path.join(__dirname, "views", "index.html");
 const poemPath = path.join(__dirname, "views", "poem.html");
 const authorPath = path.join(__dirname, "views", "author.html");
@@ -162,9 +163,9 @@ app.get("/search", async (req, res) => {
         return res.sendStatus(500);
       }
 
-      fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
+      fs.readFile(searchResultPath, "utf-8", (err, searchResultData) => {
         if (err) {
-          console.log("Error reading small_snippet.html");
+          console.log("Error reading search_result.html");
           return res.sendStatus(500);
         }
 
@@ -184,10 +185,11 @@ app.get("/search", async (req, res) => {
             snapshot.forEach(doc => {
               const data = doc.data();
   
-              let snippet = snippetData.replace("{{title}}", data.title);
+              let snippet = searchResultData.replace("{{title}}", data.title);
               snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
               snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
               snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+              snippet = snippet.replace("{{author}}", data.author);
               snippets += snippet;
             });
           }
