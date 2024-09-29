@@ -117,10 +117,8 @@
                 }
             });
             sidepaneElement.classList.remove("hidden");
-            setTimeout(() => {
-                reloadBtn.classList.replace("hidden", "inline-flex");
-                expandBtn.classList.replace("hidden", "inline-flex");
-            }, 500);
+            reloadBtn.classList.replace("hidden", "inline-flex");
+            expandBtn.classList.replace("hidden", "inline-flex");
             expandBtn.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
             titleElement.setAttribute("href", `/${data.author_slug}/${data.title_slug}`);
             authorElement.setAttribute("href", `/${data.author_slug}`);
