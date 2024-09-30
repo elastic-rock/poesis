@@ -14,15 +14,59 @@ const db = new Firestore({
 const port = 3000;
 app.use(compression());
 
-const footerPath = path.join(__dirname, "components", "footer.html");
-const navbarPath = path.join(__dirname, "components", "navbar.html");
-const smallSnippetPath = path.join(__dirname, "components", "small_snippet.html");
-const searchResultPath = path.join(__dirname, "components", "search_result.html");
-const indexPath = path.join(__dirname, "views", "index.html");
-const poemPath = path.join(__dirname, "views", "poem.html");
-const authorPath = path.join(__dirname, "views", "author.html");
-const searchPath = path.join(__dirname, "views", "search.html");
-const notFoundPath = path.join(__dirname, "views", "404.html");
+let footerData;
+fs.readFile(path.join(__dirname, "components", "footer.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  footerData = data;
+});
+
+let navbarData;
+fs.readFile(path.join(__dirname, "components", "navbar.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  navbarData = data;
+});
+
+let smallSnippetData;
+fs.readFile(path.join(__dirname, "components", "small_snippet.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  smallSnippetData = data;
+});
+
+let searchResultData;
+fs.readFile(path.join(__dirname, "components", "search_result.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  searchResultData = data;
+});
+
+let indexData;
+fs.readFile(path.join(__dirname, "views", "index.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  indexData = data;
+});
+
+let poemData;
+fs.readFile(path.join(__dirname, "views", "poem.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  poemData = data;
+});
+
+let authorData;
+fs.readFile(path.join(__dirname, "views", "author.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  authorData = data;
+});
+
+let searchData;
+fs.readFile(path.join(__dirname, "views", "search.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  searchData = data;
+});
+
+let notFoundData;
+fs.readFile(path.join(__dirname, "views", "404.html"), "utf-8", (err, data) => {
+  if (err) throw err;
+  notFoundData = data;
+});
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
@@ -79,7 +123,9 @@ app.get("/data/poem/random", async (req, res) => {
       author: doc.data().author,
       title: doc.data().title,
       poem: doc.data().poem.split('\n').slice(0, 13).join('\n'),
-      index: doc.data().index
+      index: doc.data().index,
+      author_slug: doc.data().author_slug,
+      title_slug: doc.data().title_slug
     };
     res.json(data);
   });
@@ -94,70 +140,28 @@ app.get("/:author/:title", async (req, res, next) => {
     return next();
   }  
   snapshot.forEach(doc => {
-    fs.readFile(poemPath, "utf-8", (err, poemData) => {
-      if (err) {
-        console.log("Error reading poem.html");
-        return res.sendStatus(500);
-      }
+    const data = doc.data();
   
-      fs.readFile(footerPath, "utf-8", (err, footerData) => {
-        if (err) {
-          console.log("Error reading footer.html");
-          return res.sendStatus(500);
-        }
-
-        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
-          if (err) {
-            console.log("Error reading navbar.html");
-            return res.sendStatus(500);
-          }
-
-          const data = doc.data();
+    let modifiedHtml = poemData.replace("{{footer}}", footerData);
+    modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
+    modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
+    modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+    modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
+    modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
-          let modifiedHtml = poemData.replace("{{footer}}", footerData);
-          modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
-          modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
-          modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-          modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
-          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-      
-          res.send(modifiedHtml);
+    res.send(modifiedHtml);
 
-          incrementReadCount(doc.id);
-        });
-      });
-    });
+    incrementReadCount(doc.id);
   });
 });
 
 app.get("/", async (req, res) => {
-  fs.readFile(indexPath, "utf-8", (err, indexData) => {
-    if (err) {
-      console.log("Error reading index.html");
-      return res.sendStatus(500);
-    }
-
-    fs.readFile(footerPath, "utf-8", (err, footerData) => {
-      if (err) {
-        console.log("Error reading footer.html");
-        return res.sendStatus(500);
-      }
-
-      fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
-        if (err) {
-          console.log("Error reading navbar.html");
-          return res.sendStatus(500);
-        }
-    
-        let modifiedHtml = indexData.replace("{{footer}}", footerData);
-        modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-        modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-    
-        res.send(modifiedHtml);
-      });
-    });
-  });
+  let modifiedHtml = indexData.replace("{{footer}}", footerData);
+  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+  
+  res.send(modifiedHtml);
 });
 
 app.get("/search", async (req, res) => {
@@ -174,150 +178,72 @@ app.get("/search", async (req, res) => {
     snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).get();
   }
   
-  fs.readFile(searchPath, "utf-8", (err, searchData) => {
-    if (err) {
-      console.log("Error reading search.html");
-      return res.sendStatus(500);
-    }
+  let snippets = "";
 
-    fs.readFile(footerPath, "utf-8", (err, footerData) => {
-      if (err) {
-        console.log("Error reading footer.html");
-        return res.sendStatus(500);
-      }
+  if (query == "") {
+    snippets = "<p>Try searching for something</p>";
+  } else if (snapshot.empty) {
+    snippets = "<p>0 Results</p>";
+  } else {
+    snapshot.forEach(doc => {
+      const data = doc.data();
 
-      fs.readFile(searchResultPath, "utf-8", (err, searchResultData) => {
-        if (err) {
-          console.log("Error reading search_result.html");
-          return res.sendStatus(500);
-        }
-
-        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
-          if (err) {
-            console.log("Error reading navbar.html");
-            return res.sendStatus(500);
-          }
-
-          let snippets = "";
-
-          if (query == "") {
-            snippets = "<p>Try searching for something</p>";
-          } else if (snapshot.empty) {
-            snippets = "<p>0 Results</p>";
-          } else {
-            snapshot.forEach(doc => {
-              const data = doc.data();
-  
-              let snippet = searchResultData.replace("{{title}}", data.title);
-              snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-              snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
-              snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
-              snippet = snippet.replace("{{author}}", data.author);
-              snippets += snippet;
-            });
-          }
-  
-          let modifiedHtml = searchData.replace("{{footer}}", footerData);
-          modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-          modifiedHtml = modifiedHtml.replace("{{query}}", query)
-          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-      
-          res.send(modifiedHtml);
-        });
-      });
+      let snippet = searchResultData.replace("{{title}}", data.title);
+      snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+      snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+      snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+      snippet = snippet.replace("{{author}}", data.author);
+      snippets += snippet;
     });
-  });
+  }
+
+  let modifiedHtml = searchData.replace("{{footer}}", footerData);
+  modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+  modifiedHtml = modifiedHtml.replace("{{query}}", query)
+  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+
+  res.send(modifiedHtml);
 });
 
 app.get("/:author", async (req, res, next) => {
-  const author = req.params.author;
+  const authorParam = req.params.author;
 
-  const snapshot = await db.collection("poems").where("author_slug", "==", author).orderBy("read_count", "desc").get();
+  const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).orderBy("read_count", "desc").get();
   if (snapshot.empty) {
     console.log("Empty snapshot at /:author");
     return next();
   }
 
-  fs.readFile(authorPath, "utf-8", (err, authorData) => {
-    if (err) {
-      console.log("Error reading author.html");
-      return res.sendStatus(500);
-    }
+  let snippets = "";
+  let author = "";
 
-    fs.readFile(footerPath, "utf-8", (err, footerData) => {
-      if (err) {
-        console.log("Error reading footer.html");
-        return res.sendStatus(500);
-      }
+  snapshot.forEach(doc => {
+    const data = doc.data();
 
-      fs.readFile(smallSnippetPath, "utf-8", (err, snippetData) => {
-        if (err) {
-          console.log("Error reading small_snippet.html");
-          return res.sendStatus(500);
-        }
-
-        fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
-          if (err) {
-            console.log("Error reading navbar.html");
-            return res.sendStatus(500);
-          }
-
-
-          let snippets = "";
-          let author = "";
-
-          snapshot.forEach(doc => {
-            const data = doc.data();
-
-            author = data.author;
-            let snippet = snippetData.replace("{{title}}", data.title);
-            snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-            snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
-            snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
-            snippets += snippet;
-          });
-  
-          let modifiedHtml = authorData.replace("{{footer}}", footerData);
-          modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
-          modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-          modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-          modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-      
-          res.send(modifiedHtml);
-        });
-      });
-    });
+    author = data.author;
+    let snippet = smallSnippetData.replace("{{title}}", data.title);
+    snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+    snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+    snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+    snippets += snippet;
   });
+
+  let modifiedHtml = authorData.replace("{{footer}}", footerData);
+  modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
+  modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+    
+  res.send(modifiedHtml);
 });
 
 app.use((req, res) => {
-  fs.readFile(notFoundPath, "utf-8", (err, notFoundData) => {
-    if (err) {
-      console.log("Error reading 404.html");
-      return res.sendStatus(500);
-    }
+  let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
+  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
 
-    fs.readFile(footerPath, "utf-8", (err, footerData) => {
-      if (err) {
-        console.log("Error reading footer.html");
-        return res.sendStatus(500);
-      }
-
-      fs.readFile(navbarPath, "utf-8", (err, navbarData) => {
-        if (err) {
-          console.log("Error reading navbar.html");
-          return res.sendStatus(500);
-        }
-
-        let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
-        modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-        modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-  
-        res.status(404).send(modifiedHtml);
-      });
-    });
-  });
+  res.status(404).send(modifiedHtml);
 });
 
 app.listen(port, () => {
