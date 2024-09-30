@@ -84,6 +84,7 @@
         const errorBtns = document.getElementById("errorBtns");
 
         let readMoreUrl = "";
+        let previousIndex = 789;
 
         function displayOfflineError() {
             errorText.textContent = "You are offline"
@@ -132,12 +133,19 @@
 
         async function fetchRandomPoem() {
             try {
-                const response = await fetch('/data/poem/random');
+                let fetchUrl = "";
+                if (previousIndex !== 789) {
+                    fetchUrl = `/data/poem/random?ex=${previousIndex}`
+                } else {
+                    fetchUrl = "/data/poem/random";
+                }
+                const response = await fetch(fetchUrl);
                 if (!response.ok) {
                     displayHTTPError(response.status);
                     return
                 }
                 const data = await response.json();
+                previousIndex = data.index;
                 setPoem(data);
             } catch (error) {
                 console.error(error);

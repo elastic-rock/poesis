@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
 const Firestore = require("@google-cloud/firestore");
+const { Console } = require("console");
 const db = new Firestore({
   projectId: process.env.GCLOUD_PROJECT_ID,
     keyFilename: "/keyfile.json",
@@ -48,8 +49,27 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/data/poem/random", async (req, res) => {
-  const number = crypto.randomInt(0,3);
-  const snapshot = await db.collection("poems").where("index", "==", number).limit(1).get();
+  const query = req.query.ex || "";
+
+  if (query !== "" && isNaN(query)) {
+    console.log("Query parameter ex at /data/poem/random not a number");
+    return res.sendStatus(400);
+  }
+
+  function number() {
+    if (query === "") {
+      return crypto.randomInt(0,3);
+    } else {
+      let randomNum;
+      do {
+        randomNum = crypto.randomInt(0,3);
+      } while (randomNum === parseInt(query, 10));
+      return randomNum;
+    }
+  };
+
+  const index = number();
+  const snapshot = await db.collection("poems").where("index", "==", index).limit(1).get();
   if (snapshot.empty) {
     console.log("Empty snapshot at /data/poem/random");
     return res.sendStatus(500);
