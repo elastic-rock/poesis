@@ -75,9 +75,12 @@ app.get("/data/poem/random", async (req, res) => {
     return res.sendStatus(500);
   }  
   snapshot.forEach(doc => {
-    let data = doc.data();
-    const poem = data.poem.split('\n').slice(0, 13).join('\n');
-    data.poem = poem
+    const data = {
+      author: doc.data().author,
+      title: doc.data().title,
+      poem: doc.data().poem.split('\n').slice(0, 13).join('\n'),
+      index: doc.data().index
+    };
     res.json(data);
   });
 });
