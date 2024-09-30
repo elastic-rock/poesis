@@ -14,59 +14,15 @@ const db = new Firestore({
 const port = 3000;
 app.use(compression());
 
-let footerData;
-fs.readFile(path.join(__dirname, "components", "footer.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  footerData = data;
-});
-
-let navbarData;
-fs.readFile(path.join(__dirname, "components", "navbar.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  navbarData = data;
-});
-
-let smallSnippetData;
-fs.readFile(path.join(__dirname, "components", "small_snippet.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  smallSnippetData = data;
-});
-
-let searchResultData;
-fs.readFile(path.join(__dirname, "components", "search_result.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  searchResultData = data;
-});
-
-let indexData;
-fs.readFile(path.join(__dirname, "views", "index.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  indexData = data;
-});
-
-let poemData;
-fs.readFile(path.join(__dirname, "views", "poem.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  poemData = data;
-});
-
-let authorData;
-fs.readFile(path.join(__dirname, "views", "author.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  authorData = data;
-});
-
-let searchData;
-fs.readFile(path.join(__dirname, "views", "search.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  searchData = data;
-});
-
-let notFoundData;
-fs.readFile(path.join(__dirname, "views", "404.html"), "utf-8", (err, data) => {
-  if (err) throw err;
-  notFoundData = data;
-});
+const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.html"), "utf-8");
+const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
+const smallSnippetData = fs.readFileSync(path.join(__dirname, "components", "small_snippet.html"), "utf-8");
+const searchResultData = fs.readFileSync(path.join(__dirname, "components", "search_result.html"), "utf-8");
+const indexData = fs.readFileSync(path.join(__dirname, "views", "index.html"), "utf-8");
+const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "utf-8");
+const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8");
+const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8");
+const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8");
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
