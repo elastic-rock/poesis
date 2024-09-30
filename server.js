@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
 const Firestore = require("@google-cloud/firestore");
-const { Console } = require("console");
 const db = new Firestore({
   projectId: process.env.GCLOUD_PROJECT_ID,
     keyFilename: "/keyfile.json",
