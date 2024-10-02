@@ -17,11 +17,12 @@ const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.ht
 const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
 const smallSnippetData = fs.readFileSync(path.join(__dirname, "components", "small_snippet.html"), "utf-8");
 const searchResultData = fs.readFileSync(path.join(__dirname, "components", "search_result.html"), "utf-8");
-const indexData = fs.readFileSync(path.join(__dirname, "views", "index.html"), "utf-8");
-const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "utf-8");
-const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8");
-const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8");
-const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8");
+
+const indexData = fs.readFileSync(path.join(__dirname, "views", "index.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
+const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
+const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
+const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
+const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
@@ -97,12 +98,10 @@ app.get("/:author/:title", async (req, res, next) => {
   snapshot.forEach(doc => {
     const data = doc.data();
   
-    let modifiedHtml = poemData.replace("{{footer}}", footerData);
-    modifiedHtml = modifiedHtml.replace(/{{title}}/g, data.title);
+    let modifiedHtml = poemData.replace(/{{title}}/g, data.title);
     modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
     modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
     modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
-    modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
     modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
     res.send(modifiedHtml);
@@ -112,9 +111,7 @@ app.get("/:author/:title", async (req, res, next) => {
 });
 
 app.get("/", async (req, res) => {
-  let modifiedHtml = indexData.replace("{{footer}}", footerData);
-  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+  let modifiedHtml = indexData.replace(/{{nonce}}/g, res.locals.nonce);
   
   res.send(modifiedHtml);
 });
@@ -152,9 +149,7 @@ app.get("/search", async (req, res) => {
     });
   }
 
-  let modifiedHtml = searchData.replace("{{footer}}", footerData);
-  modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
+  let modifiedHtml = searchData.replace("{{snippets}}", snippets);
   modifiedHtml = modifiedHtml.replace("{{query}}", query)
   modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
 
@@ -184,19 +179,15 @@ app.get("/:author", async (req, res, next) => {
     snippets += snippet;
   });
 
-  let modifiedHtml = authorData.replace("{{footer}}", footerData);
-  modifiedHtml = modifiedHtml.replace(/{{author}}/g, author);
+  let modifiedHtml = authorData.replace(/{{author}}/g, author);
   modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
   modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
   res.send(modifiedHtml);
 });
 
 app.use((req, res) => {
-  let modifiedHtml = notFoundData.replace("{{footer}}", footerData);
-  modifiedHtml = modifiedHtml.replace("{{navbar}}", navbarData);
-  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+  let modifiedHtml = notFoundData.replace(/{{nonce}}/g, res.locals.nonce);
 
   res.status(404).send(modifiedHtml);
 });
