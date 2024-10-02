@@ -17,12 +17,13 @@ const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.ht
 const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
 const smallSnippetData = fs.readFileSync(path.join(__dirname, "components", "small_snippet.html"), "utf-8");
 const searchResultData = fs.readFileSync(path.join(__dirname, "components", "search_result.html"), "utf-8");
+const headData = fs.readFileSync(path.join(__dirname, "components", "head.html"), "utf-8");
 
-const indexData = fs.readFileSync(path.join(__dirname, "views", "index.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
-const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
-const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
-const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
-const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData);
+const indexData = fs.readFileSync(path.join(__dirname, "views", "index.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
