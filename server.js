@@ -52,147 +52,177 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/data/poem/random", async (req, res) => {
-  const query = req.query.ex || "";
+  try {
+    const query = req.query.ex || "";
 
-  if (query !== "" && isNaN(query)) {
-    console.log("Query parameter ex at /data/poem/random not a number");
-    return res.sendStatus(400);
-  }
-
-  function number() {
-    if (query === "") {
-      return crypto.randomInt(0,3);
-    } else {
-      let randomNum;
-      do {
-        randomNum = crypto.randomInt(0,3);
-      } while (randomNum === parseInt(query, 10));
-      return randomNum;
+    if (query !== "" && isNaN(query)) {
+      console.log("Query parameter ex at /data/poem/random not a number");
+      return res.sendStatus(400);
     }
-  };
 
-  const index = number();
-  const snapshot = await db.collection("poems").where("index", "==", index).limit(1).get();
-  if (snapshot.empty) {
-    console.log("Empty snapshot at /data/poem/random");
-    return res.sendStatus(500);
-  }  
-  snapshot.forEach(doc => {
-    const data = {
-      author: doc.data().author,
-      title: doc.data().title,
-      poem: doc.data().poem.split('\n').slice(0, 13).join('\n'),
-      index: doc.data().index,
-      author_slug: doc.data().author_slug,
-      title_slug: doc.data().title_slug
+    function number() {
+      if (query === "") {
+        return crypto.randomInt(0,3);
+      } else {
+        let randomNum;
+        do {
+          randomNum = crypto.randomInt(0,3);
+        } while (randomNum === parseInt(query, 10));
+        return randomNum;
+      }
     };
-    res.json(data);
-  });
+
+    const index = number();
+    const snapshot = await db.collection("poems").where("index", "==", index).limit(1).get();
+    if (snapshot.empty) {
+      console.log("Empty snapshot at /data/poem/random");
+      return res.sendStatus(500);
+    }  
+    snapshot.forEach(doc => {
+      const data = {
+        author: doc.data().author,
+        title: doc.data().title,
+        poem: doc.data().poem.split('\n').slice(0, 13).join('\n'),
+        index: doc.data().index,
+        author_slug: doc.data().author_slug,
+        title_slug: doc.data().title_slug
+      };
+      res.json(data);
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+  
 });
 
 app.get("/:author/:title", async (req, res, next) => {
-  const author = req.params.author;
-  const title = req.params.title;
+  try {
+    const author = req.params.author;
+    const title = req.params.title;
 
-  const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).limit(1).get();
-  if (snapshot.empty) {
-    return next();
-  }  
-  snapshot.forEach(doc => {
-    const data = doc.data();
+    const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).limit(1).get();
+    if (snapshot.empty) {
+      return next();
+    }  
+    snapshot.forEach(doc => {
+      const data = doc.data();
   
-    let modifiedHtml = poemData.replace(/{{title}}/g, data.title);
-    modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
-    modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-    modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
-    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+      let modifiedHtml = poemData.replace(/{{title}}/g, data.title);
+      modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
+      modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+      modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
+      modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
-    res.send(modifiedHtml);
+      res.send(modifiedHtml);
 
-    incrementReadCount(doc.id);
-  });
+      incrementReadCount(doc.id);
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+  
 });
 
 app.get("/", async (req, res) => {
-  let modifiedHtml = indexData.replace(/{{nonce}}/g, res.locals.nonce);
-  
-  res.send(modifiedHtml);
+  try {
+    let modifiedHtml = indexData.replace(/{{nonce}}/g, res.locals.nonce)
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/search", async (req, res) => {
-  const query = req.query.q?.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
+  try {
+    const query = req.query.q?.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
 
-  if (query.length > 100) {
-    console.log("Search query is too long");
-    return res.sendStatus(400);
-  }
+    if (query.length > 100) {
+      console.log("Search query is too long");
+      return res.sendStatus(400);
+    }
 
-  let snapshot;
-  if (query !== "") {
-    const keywords = query.toLowerCase().split(' ');
-    snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).get();
+    let snapshot;
+    if (query !== "") {
+      const keywords = query.toLowerCase().split(' ');
+      snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).get();
+    }
+  
+    let snippets = "";
+
+    if (query == "") {
+      snippets = "<p>Try searching for something</p>";
+    } else if (snapshot.empty) {
+      snippets = "<p>0 Results</p>";
+    } else {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+
+        let snippet = searchResultData.replace("{{title}}", data.title);
+        snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+        snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+        snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+        snippet = snippet.replace("{{author}}", data.author);
+        snippets += snippet;
+      });
+    }
+
+    let modifiedHtml = searchData.replace("{{snippets}}", snippets);
+    modifiedHtml = modifiedHtml.replace("{{query}}", query)
+    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
   }
   
-  let snippets = "";
-
-  if (query == "") {
-    snippets = "<p>Try searching for something</p>";
-  } else if (snapshot.empty) {
-    snippets = "<p>0 Results</p>";
-  } else {
-    snapshot.forEach(doc => {
-      const data = doc.data();
-
-      let snippet = searchResultData.replace("{{title}}", data.title);
-      snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-      snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
-      snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
-      snippet = snippet.replace("{{author}}", data.author);
-      snippets += snippet;
-    });
-  }
-
-  let modifiedHtml = searchData.replace("{{snippets}}", snippets);
-  modifiedHtml = modifiedHtml.replace("{{query}}", query)
-  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
-
-  res.send(modifiedHtml);
 });
 
 app.get("/:author", async (req, res, next) => {
-  const authorParam = req.params.author;
+  try {
+    const authorParam = req.params.author;
 
-  const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).orderBy("read_count", "desc").get();
-  if (snapshot.empty) {
-    console.log("Empty snapshot at /:author");
-    return next();
-  }
+    const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).orderBy("read_count", "desc").get();
+    if (snapshot.empty) {
+      return next();
+    }
 
-  let snippets = "";
-  let author = "";
+    let snippets = "";
+    let author = "";
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
+    snapshot.forEach(doc => {
+      const data = doc.data();
 
-    author = data.author;
-    let snippet = smallSnippetData.replace("{{title}}", data.title);
-    snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
-    snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
-    snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
-    snippets += snippet;
-  });
+      author = data.author;
+      let snippet = smallSnippetData.replace("{{title}}", data.title);
+      snippet = snippet.replace("{{poem}}", data.poem.split('\n').slice(0, 4).map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+      snippet = snippet.replace(/{{author_slug}}/g, data.author_slug);
+      snippet = snippet.replace(/{{title_slug}}/g, data.title_slug);
+      snippets += snippet;
+    });
 
-  let modifiedHtml = authorData.replace(/{{author}}/g, author);
-  modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
-  modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
+    let modifiedHtml = authorData.replace(/{{author}}/g, author);
+    modifiedHtml = modifiedHtml.replace("{{snippets}}", snippets);
+    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
-  res.send(modifiedHtml);
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
 app.use((req, res) => {
-  let modifiedHtml = notFoundData.replace(/{{nonce}}/g, res.locals.nonce);
-
-  res.status(404).send(modifiedHtml);
+  try {
+    let modifiedHtml = notFoundData.replace(/{{nonce}}/g, res.locals.nonce);
+    res.status(404).send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
 app.listen(port, () => {
