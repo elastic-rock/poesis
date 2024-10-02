@@ -41,8 +41,9 @@ app.use((req, res, next) => {
   res.set("X-Content-Type-Options", "nosniff");
   res.set("X-Frame-Options", "DENY");
   res.set("X-Xss-Protection", "0");
-  res.set("Cross-Origin-Opener-Policy", "same-origin")
-  res.set("Cross-Origin-Resource-Policy", "same-origin")
+  res.set("Cross-Origin-Opener-Policy", "same-origin");
+  res.set("Cross-Origin-Resource-Policy", "same-origin");
+  res.set("Cross-Origin-Embedder-Policy", "require-corp");
   res.removeHeader('X-Powered-By');
   next();
 });
