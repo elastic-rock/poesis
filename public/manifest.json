@@ -2,14 +2,28 @@
     "short_name": "Poesis",
     "icons": [
       {
-        "src": "/icon_192.png",
-        "type": "image/png",
-        "sizes": "192x192"
+        "purpose": "any maskable",
+        "sizes": "48x48",
+        "src": "/static/icon_maskable_48.png",
+        "type": "image/png"
       },
       {
-        "src": "/icon_512.png",
-        "type": "image/png",
-        "sizes": "512x512"
+        "purpose": "any maskable",
+        "sizes": "96x96",
+        "src": "/static/icon_maskable_96.png",
+        "type": "image/png"
+      },
+      {
+        "purpose": "any maskable",
+        "sizes": "192x192",
+        "src": "/static/icon_maskable_192.png",
+        "type": "image/png"
+      },
+      {
+        "purpose": "any maskable",
+        "sizes": "512x512",
+        "src": "/static/icon_maskable_512.png",
+        "type": "image/png"
       }
     ],
     "id": "/",
