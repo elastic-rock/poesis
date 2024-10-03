@@ -24,6 +24,7 @@ const poemData = fs.readFileSync(path.join(__dirname, "views", "poem.html"), "ut
 const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const aboutData = fs.readFileSync(path.join(__dirname, "views", "about.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
@@ -179,6 +180,16 @@ app.get("/search", async (req, res) => {
     res.sendStatus(500);
   }
   
+});
+
+app.get("/about", async (req, res) => {
+  try {
+    let modifiedHtml = aboutData.replace(/{{nonce}}/g, res.locals.nonce)
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/:author", async (req, res, next) => {
