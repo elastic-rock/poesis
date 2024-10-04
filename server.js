@@ -111,7 +111,7 @@ app.get("/:author/:title", async (req, res, next) => {
   
       let modifiedHtml = poemData.replace(/{{title}}/g, data.title);
       modifiedHtml = modifiedHtml.replace(/{{author}}/g, data.author);
-      modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n'));
+      modifiedHtml = modifiedHtml.replace("{{poem}}", data.poem.split('\n').map(line => line.trim() === '' ? '<br>' : `<p>${line}</p>`).join('\n') + (data.copyright ? `<p class="font-light text-sm pt-4">Copyright: ${data.copyright}</p>` : ''));
       modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author_slug);
       modifiedHtml = modifiedHtml.replace("{{description}}", data.description);
       modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
