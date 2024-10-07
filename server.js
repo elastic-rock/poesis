@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const compression = require('compression');
 const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
@@ -10,7 +9,6 @@ const db = new Firestore({
 });
 
 const port = process.env.PORT || 3000;
-app.use(compression());
 
 const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.html"), "utf-8");
 const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
