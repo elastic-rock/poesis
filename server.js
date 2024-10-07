@@ -6,11 +6,10 @@ const path = require("path");
 const crypto = require('crypto');
 const Firestore = require("@google-cloud/firestore");
 const db = new Firestore({
-  projectId: process.env.GCLOUD_PROJECT_ID,
-    keyFilename: "/keyfile.json",
-  });
+  projectId: process.env.GOOGLE_CLOUD_PROJECT
+});
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use(compression());
 
 const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.html"), "utf-8");
