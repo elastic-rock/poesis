@@ -32,19 +32,6 @@ function incrementReadCount(docId) {
   });
 };
 
-let poemCount;
-async function getPoemCount() {
-  try {
-    const snapshot = await db.collection("poems").count().get();
-    poemCount = snapshot.data().count;
-    console.log(`Task getPoemCount ran successfully. Value: ${poemCount}`);
-  } catch (error) {
-    console.log(error);
-  }
-  setTimeout(getPoemCount, 24 * 60 * 60 * 1000);
-}
-getPoemCount();
-
 function sendInternalError(res) {
   try {
     let modifiedHtml = internalErrorData.replace(/{{nonce}}/g, res.locals.nonce)
@@ -86,7 +73,7 @@ app.get("/data/poem/random", async (req, res) => {
 
     function number() {
       if (query === "") {
-        return crypto.randomInt(0,poemCount);
+        return crypto.randomInt(0,3);
       } else {
         let randomNum;
         do {
