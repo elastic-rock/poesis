@@ -22,6 +22,7 @@ const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"),
 const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const aboutData = fs.readFileSync(path.join(__dirname, "views", "about.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const privacyData = fs.readFileSync(path.join(__dirname, "views", "privacy.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const internalErrorData = fs.readFileSync(path.join(__dirname, "views", "500.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 
 function incrementReadCount(docId) {
@@ -194,6 +195,16 @@ app.get("/search", async (req, res) => {
 app.get("/about", async (req, res) => {
   try {
     let modifiedHtml = aboutData.replace(/{{nonce}}/g, res.locals.nonce)
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    sendInternalError(res);
+  }
+});
+
+app.get("/privacy", async (req, res) => {
+  try {
+    let modifiedHtml = privacyData.replace(/{{nonce}}/g, res.locals.nonce)
     res.send(modifiedHtml);
   } catch (error) {
     console.log(error);
