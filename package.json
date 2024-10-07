@@ -1,4 +1,6 @@
 {
+    "name": "poesis",
+    "version": "0.0.0",
     "dependencies": {
         "@google-cloud/firestore": "^7.10.0",
         "compression": "^1.7.4",
