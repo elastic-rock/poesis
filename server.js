@@ -24,6 +24,7 @@ const authorData = fs.readFileSync(path.join(__dirname, "views", "author.html"),
 const searchData = fs.readFileSync(path.join(__dirname, "views", "search.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const aboutData = fs.readFileSync(path.join(__dirname, "views", "about.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
+const internalErrorData = fs.readFileSync(path.join(__dirname, "views", "500.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 
 function incrementReadCount(docId) {
   db.collection("poems").doc(docId).update({
@@ -43,6 +44,16 @@ async function getPoemCount() {
   setTimeout(getPoemCount, 24 * 60 * 60 * 1000);
 }
 getPoemCount();
+
+function sendInternalError(res) {
+  try {
+    let modifiedHtml = internalErrorData.replace(/{{nonce}}/g, res.locals.nonce)
+    res.send(modifiedHtml);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
 
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
@@ -134,7 +145,7 @@ app.get("/:author/:title", async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
   
 });
@@ -145,7 +156,7 @@ app.get("/", async (req, res) => {
     res.send(modifiedHtml);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
 });
 
@@ -190,7 +201,7 @@ app.get("/search", async (req, res) => {
     res.send(modifiedHtml);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
   
 });
@@ -201,7 +212,7 @@ app.get("/about", async (req, res) => {
     res.send(modifiedHtml);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
 });
 
@@ -235,7 +246,7 @@ app.get("/:author", async (req, res, next) => {
     res.send(modifiedHtml);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
 });
 
@@ -245,7 +256,7 @@ app.use((req, res) => {
     res.status(404).send(modifiedHtml);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    sendInternalError(res);
   }
 });
 
