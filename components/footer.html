@@ -2,4 +2,14 @@
     <p>© 2024 David Weis</p>
     <a class="hover:underline" href="/about">About</a>
     <a class="hover:underline" href="/privacy">Privacy</a>
+    <button id="resetBtn" class="hover:underline" href="/privacy">Reset</button>
+    <script nonce="{{nonce}}">
+        const resetBtn = document.getElementById("resetBtn");
+        resetBtn.addEventListener("click", (event) => {
+            const languageCode = languageBtn.textContent.toLowerCase()
+            if (confirm(`Are you sure you want to reset local preferences?`)) {
+                localStorage.removeItem("exLang");
+            }
+        });
+    </script>
 </footer>

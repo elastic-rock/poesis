@@ -35,7 +35,7 @@
         <div data-nosnippet id="poemPlaceholder" class="w-96 flex flex-col flex-auto">
             <div class="flex flex-row gap-4 items-start">
                 <a id="title" href="" class="text-3xl min-h-[36px] hover:underline decoration-from-font"></a>
-                <p id="languageInfo" class="hidden rounded-full py-1 px-2 border-2 border-white shrink-0 fade-in">EN</p>
+                <button id="languageBtn" class="hidden rounded-full py-1 px-2 border-neutral-500 border-2 hover:border-white shrink-0 line-through fade-in">EN</button>
             </div>
             <a id="author" href="" class="text-lg font-light pt-1 pb-2 min-h-[40px] hover:underline decoration-from-font"></a>
             <div class="relative my-4 h-[312px] overflow-hidden">
@@ -76,7 +76,7 @@
         const titleElement = document.getElementById("title");
         const poemElement = document.getElementById("poem");
 
-        const languageInfo = document.getElementById("languageInfo");
+        const languageBtn = document.getElementById("languageBtn");
 
         const reloadBtn = document.getElementById("reload");
         const expandBtn = document.getElementById("expand");
@@ -91,6 +91,7 @@
 
         let readMoreUrl = "";
         let previousIndex = 789;
+        let exLang = JSON.parse(localStorage.getItem("exLang")) || [];
 
         function displayOfflineError() {
             errorText.textContent = "You are offline"
@@ -129,8 +130,13 @@
                     poemElement.appendChild(p);
                 }
             });
-            languageInfo.textContent = data.language.toUpperCase();
-            languageInfo.classList.remove("hidden");
+            languageBtn.textContent = data.language.toUpperCase();
+            languageBtn.classList.remove("hidden");
+            if (exLang.includes(data.language)) {
+                languageBtn.classList.add("line-through");
+            } else {
+                languageBtn.classList.remove("line-through");
+            }
             sidepaneElement.classList.remove("hidden");
             reloadBtn.classList.replace("hidden", "inline-flex");
             expandBtn.classList.replace("hidden", "inline-flex");
@@ -142,8 +148,12 @@
         async function fetchRandomPoem() {
             try {
                 let fetchUrl = "";
-                if (previousIndex !== 789) {
+                if (previousIndex !== 789 && exLang.length !== 0) {
+                    fetchUrl = `/data/poem/random?ex=${previousIndex}&exLang=${exLang.join(",")}`
+                } else if (previousIndex !== 789) {
                     fetchUrl = `/data/poem/random?ex=${previousIndex}`
+                } else if (exLang.length !== 0) {
+                    fetchUrl = `/data/poem/random?exLang=${exLang.join(",")}`
                 } else {
                     fetchUrl = "/data/poem/random";
                 }
@@ -173,8 +183,22 @@
             titleElement.textContent = "";
             titleElement.classList.remove('fade-in');
             poemElement.textContent = "";
-            languageInfo.classList.add("hidden");
+            languageBtn.classList.add("hidden");
             fetchRandomPoem();
+        });
+
+        languageBtn.addEventListener("click", (event) => {
+            const languageCode = languageBtn.textContent.toLowerCase()
+            if (exLang.includes(languageCode)) {
+                exLang = exLang.filter(item => item !== languageCode);
+                languageBtn.classList.remove("line-through");
+            } else {
+                if (confirm(`Are you sure you don't want to display poems in ${languageCode}?`)) {
+                    exLang.push(languageCode);
+                    languageBtn.classList.add("line-through");
+                }
+            }
+            localStorage.setItem("exLang", JSON.stringify(exLang));
         });
 
         expandBtn.addEventListener("click", (event) => {

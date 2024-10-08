@@ -10,6 +10,8 @@ const db = new Firestore({
 
 const port = process.env.PORT || 3000;
 
+const poemCount = 3
+
 const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.html"), "utf-8");
 const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
 const smallSnippetData = fs.readFileSync(path.join(__dirname, "components", "small_snippet.html"), "utf-8");
@@ -63,30 +65,43 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.get("/data/poem/random", async (req, res) => {
   try {
-    const query = req.query.ex || "";
+    const ex = req.query.ex || "";
+    const exLang = req.query.exLang || "";
 
-    if (query !== "" && isNaN(query)) {
+    if (ex !== "" && isNaN(ex)) {
       console.log("Query parameter ex at /data/poem/random not a number");
       return res.sendStatus(400);
     }
 
+    const exLangSeparated = exLang.split(',');
+    if (exLang !== "" && !exLangSeparated.every(q => /^[a-z]{2}$/.test(q))) {
+      console.log("Query parameter exLang at /data/poem/random violates regex");
+      return res.sendStatus(400);
+    }
+
     function number() {
-      if (query === "") {
-        return crypto.randomInt(0,3);
+      if (ex === "") {
+        return crypto.randomInt(0,poemCount);
       } else {
         let randomNum;
         do {
-          randomNum = crypto.randomInt(0,3);
-        } while (randomNum === parseInt(query, 10));
+          randomNum = crypto.randomInt(0,poemCount);
+        } while (randomNum === parseInt(ex, 10));
         return randomNum;
       }
     };
 
     const index = number();
-    const snapshot = await db.collection("poems").where("index", "==", index).limit(1).get();
+    let snapshot;
+    if (exLang === "") {
+      snapshot = await db.collection("poems").orderBy("index").startAt(index).limit(1).get();
+    } else {
+      snapshot = await db.collection("poems").where("language", "not-in", exLangSeparated).orderBy("index").startAt(index).limit(1).get();
+    }
+
     if (snapshot.empty) {
       console.log("Empty snapshot at /data/poem/random");
-      return res.sendStatus(500);
+      return res.sendStatus(400);
     }  
     snapshot.forEach(doc => {
       const data = {
