@@ -95,7 +95,8 @@ app.get("/data/poem/random", async (req, res) => {
         poem: doc.data().poem.split('\n').slice(0, 13).join('\n'),
         index: doc.data().index,
         author_slug: doc.data().author_slug,
-        title_slug: doc.data().title_slug
+        title_slug: doc.data().title_slug,
+        language: doc.data().language
       };
       res.json(data);
     });
