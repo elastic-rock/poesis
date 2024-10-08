@@ -34,7 +34,7 @@ function incrementReadCount(docId) {
 function sendInternalError(res) {
   try {
     let modifiedHtml = internalErrorData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.status(500).send(modifiedHtml);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
