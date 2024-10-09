@@ -5,5 +5,7 @@ handlers:
   - url: .*
     secure: always
     script: auto
+inbound_services:
+  - warmup
 automatic_scaling:
   min_instances: 1

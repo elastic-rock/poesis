@@ -4,9 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
 const Firestore = require("@google-cloud/firestore");
-const db = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT
-});
+const db = new Firestore();
 
 const port = process.env.PORT || 3000;
 
@@ -42,6 +40,10 @@ function sendInternalError(res) {
     res.sendStatus(500);
   }
 }
+
+app.get('/_ah/warmup', async (req, res) => {
+  const snapshot = await db.collection("poems").limit(1).get();
+});
 
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
