@@ -42,7 +42,8 @@ function sendInternalError(res) {
 }
 
 app.get('/_ah/warmup', async (req, res) => {
-  const snapshot = await db.collection("poems").limit(1).get();
+  await db.collection("poems").limit(1).get();
+  res.sendStatus(200);
 });
 
 app.use((req, res, next) => {
