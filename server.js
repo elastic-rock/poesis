@@ -31,37 +31,62 @@ function incrementReadCount(docId) {
   });
 };
 
-function sendInternalError(res) {
+function sendInternalError(req, res) {
   try {
     let modifiedHtml = internalErrorData.replace(/{{nonce}}/g, res.locals.nonce)
     res.status(500).send(modifiedHtml);
   } catch (error) {
-    console.log(error);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at sendInternalError(): ${error}`
+    }
+    console.log(JSON.stringify(log));
     res.sendStatus(500);
   }
 }
 
 app.get('/_ah/warmup', async (req, res) => {
-  await db.collection("poems").limit(1).get();
-  res.sendStatus(200);
+  try {
+    await db.collection("poems").limit(1).get();
+    res.sendStatus(200);
+  } catch (error) {
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /_ah/warmup: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    res.sendStatus(500);
+  }
 });
 
 app.use((req, res, next) => {
-  const nonce = crypto.randomBytes(16).toString('base64');
-  res.locals.nonce = nonce;
+  try {
+    const nonce = crypto.randomBytes(16).toString('base64');
+    res.locals.nonce = nonce;
 
-  res.set("Cache-Control", "no-cache, public");
-  res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' 'nonce-${nonce}' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
-  res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-  res.set("X-Content-Type-Options", "nosniff");
-  res.set("X-Frame-Options", "DENY");
-  res.set("X-Xss-Protection", "0");
-  res.set("Cross-Origin-Opener-Policy", "same-origin");
-  res.set("Cross-Origin-Resource-Policy", "same-origin");
-  res.set("Cross-Origin-Embedder-Policy", "require-corp");
-  res.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  res.removeHeader('X-Powered-By');
-  next();
+    res.set("Cache-Control", "no-cache, public");
+    res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' 'nonce-${nonce}' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
+    res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    res.set("X-Content-Type-Options", "nosniff");
+    res.set("X-Frame-Options", "DENY");
+    res.set("X-Xss-Protection", "0");
+    res.set("Cross-Origin-Opener-Policy", "same-origin");
+    res.set("Cross-Origin-Resource-Policy", "same-origin");
+    res.set("Cross-Origin-Embedder-Policy", "require-corp");
+    res.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.removeHeader('X-Powered-By');
+    next();
+  } catch (error) {
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at headers middleware: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    res.sendStatus(500);
+  }
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -72,13 +97,23 @@ app.get("/data/poem/random", async (req, res) => {
     const exLang = req.query.exLang || "";
 
     if (ex !== "" && isNaN(ex)) {
-      console.log("Query parameter ex at /data/poem/random not a number");
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Query parameter ex at /data/poem/random not a number"
+      }
+      console.log(JSON.stringify(log));
       return res.sendStatus(400);
     }
 
     const exLangSeparated = exLang.split(',');
     if (exLang !== "" && !exLangSeparated.every(q => /^[a-z]{2}$/.test(q))) {
-      console.log("Query parameter exLang at /data/poem/random violates regex");
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Query parameter exLang at /data/poem/random violates regex"
+      }
+      console.log(JSON.stringify(log));
       return res.sendStatus(400);
     }
 
@@ -103,7 +138,12 @@ app.get("/data/poem/random", async (req, res) => {
     }
 
     if (snapshot.empty) {
-      console.log("Empty snapshot at /data/poem/random");
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Empty snapshot at /data/poem/random"
+      }
+      console.log(JSON.stringify(log));
       return res.sendStatus(400);
     }  
     snapshot.forEach(doc => {
@@ -119,7 +159,12 @@ app.get("/data/poem/random", async (req, res) => {
       res.json(data);
     });
   } catch (error) {
-    console.log(error);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /data/poem/random: ${error}`
+    }
+    console.log(JSON.stringify(log));
     res.sendStatus(500);
   }
   
@@ -132,6 +177,12 @@ app.get("/:author/:title", async (req, res, next) => {
 
     const snapshot = await db.collection("poems").where("author_slug", "==", author).where("title_slug", "==", title).limit(1).get();
     if (snapshot.empty) {
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Snapshot empty at /:author/:title"
+      }
+      console.log(JSON.stringify(log));
       return next();
     }  
     snapshot.forEach(doc => {
@@ -149,8 +200,13 @@ app.get("/:author/:title", async (req, res, next) => {
       incrementReadCount(doc.id);
     });
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /:author/:title: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
   
 });
@@ -160,8 +216,13 @@ app.get("/", async (req, res) => {
     let modifiedHtml = indexData.replace(/{{nonce}}/g, res.locals.nonce)
     res.send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
 });
 
@@ -170,7 +231,12 @@ app.get("/search", async (req, res) => {
     const query = req.query.q?.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
 
     if (query.length > 100) {
-      console.log("Search query is too long");
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Query at /search too long"
+      }
+      console.log(JSON.stringify(log));
       return res.sendStatus(400);
     }
 
@@ -205,8 +271,13 @@ app.get("/search", async (req, res) => {
 
     res.send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /search: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
   
 });
@@ -216,8 +287,13 @@ app.get("/about", async (req, res) => {
     let modifiedHtml = aboutData.replace(/{{nonce}}/g, res.locals.nonce)
     res.send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /about: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
 });
 
@@ -226,8 +302,13 @@ app.get("/privacy", async (req, res) => {
     let modifiedHtml = privacyData.replace(/{{nonce}}/g, res.locals.nonce)
     res.send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /privacy: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
 });
 
@@ -237,6 +318,12 @@ app.get("/:author", async (req, res, next) => {
 
     const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).orderBy("read_count", "desc").get();
     if (snapshot.empty) {
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Snapshot empty at /:author"
+      }
+      console.log(JSON.stringify(log));
       return next();
     }
 
@@ -260,8 +347,13 @@ app.get("/:author", async (req, res, next) => {
     
     res.send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /:author: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
 });
 
@@ -270,11 +362,20 @@ app.use((req, res) => {
     let modifiedHtml = notFoundData.replace(/{{nonce}}/g, res.locals.nonce);
     res.status(404).send(modifiedHtml);
   } catch (error) {
-    console.log(error);
-    sendInternalError(res);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at 404 middleware: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    sendInternalError(req, res);
   }
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  const log = {
+    severity: "INFO",
+    message: `Server is running on http://localhost:${port}`
+  }
+  console.log(JSON.stringify(log));
 });
