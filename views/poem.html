@@ -10,8 +10,7 @@
 
     {{navbar}}
 
-    <div class="flex flex-wrap pt-24 w-full gap-x-12 px-6 sm:px-20 max-w-6xl mx-auto">
-
+    <main class="flex flex-wrap pt-24 w-full gap-x-12 px-6 sm:px-20 max-w-6xl mx-auto">
         <div id="poemPlaceholder" class="w-max flex-auto h-max fade-in">
             <p id="title" class="text-3xl">{{title}}</p>
             <a id="author" href="/{{author_slug}}" class="text-lg font-light pt-1 pb-2 hover:underline decoration-from-font">{{author}}</a>
@@ -30,7 +29,7 @@
             <p class="pb-1">Description</p>
             <p class="font-light">{{description}}</p>
         </div>
-    </div>
+    </main>
 
     <div id="shareDialog" class="hidden fixed inset-0 z-40 transition-opacity">
         <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center transition-opacity px-4">
