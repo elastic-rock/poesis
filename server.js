@@ -94,7 +94,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/data/poem/random", async (req, res) => {
   try {
     const ex = req.query.ex || "";
-    const exLang = req.query.exLang || "";
+    const lang = req.query.lang || "";
 
     if (ex !== "" && isNaN(ex)) {
       const log = {
@@ -106,12 +106,12 @@ app.get("/data/poem/random", async (req, res) => {
       return res.sendStatus(400);
     }
 
-    const exLangSeparated = exLang.split(',');
-    if (exLang !== "" && !exLangSeparated.every(q => /^[a-z]{2}$/.test(q))) {
+    const langSeparated = lang.split(',');
+    if (lang !== "" && !langSeparated.every(q => /^[a-z]{2}$/.test(q))) {
       const log = {
         severity: "INFO",
         "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
-        message: "Query parameter exLang at /data/poem/random violates regex"
+        message: "Query parameter lang at /data/poem/random violates regex"
       }
       console.log(JSON.stringify(log));
       return res.sendStatus(400);
@@ -131,10 +131,10 @@ app.get("/data/poem/random", async (req, res) => {
 
     const index = number();
     let snapshot;
-    if (exLang === "") {
+    if (lang === "") {
       snapshot = await db.collection("poems").orderBy("index").startAt(index).limit(1).get();
     } else {
-      snapshot = await db.collection("poems").where("language", "not-in", exLangSeparated).orderBy("index").startAt(index).limit(1).get();
+      snapshot = await db.collection("poems").where("language", "in", langSeparated).orderBy("index").startAt(index).limit(1).get();
     }
 
     if (snapshot.empty) {
@@ -229,6 +229,7 @@ app.get("/", async (req, res) => {
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.replace(/[^a-zA-Z0-9\s]/g, '').trim() || "";
+    const lang = req.query.lang || "";
 
     if (query.length > 100) {
       const log = {
@@ -240,8 +241,22 @@ app.get("/search", async (req, res) => {
       return res.sendStatus(400);
     }
 
+    const langSeparated = lang.split(',');
+    if (lang !== "" && !langSeparated.every(q => /^[a-z]{2}$/.test(q))) {
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Query parameter lang at /search violates regex"
+      }
+      console.log(JSON.stringify(log));
+      return res.sendStatus(400);
+    }
+
     let snapshot;
-    if (query !== "") {
+    if (query !== "" && lang !== "") {
+      const keywords = query.toLowerCase().split(' ');
+      snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).where("language", "in", langSeparated).get();
+    } else if (query !== "") {
       const keywords = query.toLowerCase().split(' ');
       snapshot = await db.collection("poems").where("keywords", "array-contains-any", keywords).get();
     }
