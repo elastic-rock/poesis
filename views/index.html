@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div data-nosnippet id="poemPlaceholder" class="hidden w-96 flex flex-col flex-auto">
+        <div data-nosnippet id="poemPlaceholder" class="hidden w-96 flex-col flex-auto">
             <div class="flex flex-row gap-4 items-start">
                 <a id="title" href="" class="text-3xl min-h-[36px] hover:underline decoration-from-font"></a>
                 <p id="languageElement" class="hidden rounded-full py-1 px-2 border-white border-2 shrink-0 fade-in">EN</p>
@@ -161,7 +161,7 @@
             errorText.textContent = "You are offline"
             errorIcon.setAttribute("d", "M260-160q-92 0-156-64T40-380q0-77 47.5-137T210-594q3-8 6-15.5t6-16.5L84-764q-11-11-11-28t11-28q11-11 28-11t28 11l680 680q11 11 11.5 27.5T820-84q-11 11-27.5 11.5T764-83l-78-77H260Zm0-80h346L284-562q-2 11-3 21t-1 21h-20q-58 0-99 41t-41 99q0 58 41 99t99 41Zm185-161Zm419 191-58-56q17-14 25.5-32.5T840-340q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-27 0-52 6.5T380-693l-58-58q35-24 74.5-36.5T480-800q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 39-15 72.5T864-210ZM593-479Z");
             errorBtns.classList.remove("hidden");
-            poemPlaceholder.classList.add("hidden");
+            poemPlaceholder.classList.replace("flex", "hidden");
             errorPlaceholder.classList.remove("hidden");
             sidepaneElement.classList.remove("hidden");
         }
@@ -170,13 +170,13 @@
             errorText.textContent = `Error ${responseCode}`
             errorIcon.setAttribute("d", "M479.98-280q14.02 0 23.52-9.48t9.5-23.5q0-14.02-9.48-23.52t-23.5-9.5q-14.02 0-23.52 9.48t-9.5 23.5q0 14.02 9.48 23.52t23.5 9.5Zm3.2-153q12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-193q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62-8.5 8.63-8.5 21.38v193q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63Zm-2.91 353q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Zm.23-60Q622-140 721-239.5t99-241Q820-622 721.19-721T480-820q-141 0-240.5 98.81T140-480q0 141 99.5 240.5t241 99.5Zm-.5-340Z");
             errorBtns.classList.add("hidden");
-            poemPlaceholder.classList.add("hidden");
+            poemPlaceholder.classList.replace("flex", "hidden");
             errorPlaceholder.classList.remove("hidden");
             sidepaneElement.classList.remove("hidden");
         }
 
         function setPoem(data) {
-            poemPlaceholder.classList.remove("hidden");
+            poemPlaceholder.classList.replace("hidden", "flex");
             errorPlaceholder.classList.add("hidden");
             const lines = data.poem.split('\n');
             authorElement.textContent = data.author;
@@ -275,14 +275,14 @@
         filterBtn.addEventListener("click", (event) => {
             loadCheckedValues();
             filterPlaceholder.classList.replace("hidden", "flex");
-            poemPlaceholder.classList.add("hidden");
+            poemPlaceholder.classList.replace("flex", "hidden");
         });
 
         filterConfirmBtn.addEventListener("click", (event) => {
             const values = Array.from(languageCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
             localStorage.setItem("languageFilter", JSON.stringify(values));
             filterPlaceholder.classList.replace("flex", "hidden");
-            poemPlaceholder.classList.remove("hidden");
+            poemPlaceholder.classList.replace("hidden", "flex");
         });
 
         filterDissmissBtn.addEventListener("click", (event) => {
@@ -296,7 +296,7 @@
             reloadBtn.classList.remove("fade-in");
             expandBtn.classList.remove("fade-in");
             filterPlaceholder.classList.replace("flex", "hidden");
-            poemPlaceholder.classList.remove("hidden");
+            poemPlaceholder.classList.replace("hidden", "flex");
         });
     </script>
 
