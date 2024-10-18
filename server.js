@@ -5,6 +5,7 @@ const path = require("path");
 const crypto = require('crypto');
 const Firestore = require("@google-cloud/firestore");
 const db = new Firestore();
+const UAParser = require('ua-parser-js');
 
 const port = process.env.PORT || 3000;
 
@@ -24,12 +25,6 @@ const notFoundData = fs.readFileSync(path.join(__dirname, "views", "404.html"), 
 const aboutData = fs.readFileSync(path.join(__dirname, "views", "about.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const privacyData = fs.readFileSync(path.join(__dirname, "views", "privacy.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const internalErrorData = fs.readFileSync(path.join(__dirname, "views", "500.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
-
-function incrementReadCount(docId) {
-  db.collection("poems").doc(docId).update({
-    read_count: Firestore.FieldValue.increment(1)
-  });
-};
 
 function sendInternalError(req, res) {
   try {
@@ -88,6 +83,44 @@ app.use((req, res, next) => {
     res.sendStatus(500);
   }
 });
+
+async function createAnalyticsEntry(req, res) {
+  try {
+    const requiredHeaders = (["X-Forwarded-For", "User-Agent"]);
+    const missingHeaders = requiredHeaders.filter(header => !req.headers[header.toLowerCase()]);
+    if (missingHeaders.length > 0) {
+      return res.sendStatus(400);
+    }
+
+    const userAgent = req.header("User-Agent")
+    const parser = new UAParser(userAgent);
+    const deviceInfo = parser.getResult();
+    const userId = req.header("X-Forwarded-For") + req.header("User-Agent");
+
+    await db.runTransaction(async (t) => {
+      const operationData = await t.get(db.collection("operation").doc("analytics"));
+      const salt = operationData.data().salt;
+      const hash = crypto.createHmac("sha512", salt).update(userId).digest("hex");
+      const entry = {
+        country: req.header("X-Appengine-Country") || "ZZ",
+        path: req.path,
+        timestamp: Firestore.FieldValue.serverTimestamp(),
+        userHash: hash,
+        browserName: deviceInfo.browser.name,
+        browserVersion: deviceInfo.browser.version,
+        os: deviceInfo.os.name,
+        referer: req.header("Referer")
+      }
+      await t.set(db.collection("analytics").doc(), entry);
+    });
+
+    res.sendStatus(200);
+
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -196,8 +229,6 @@ app.get("/:author/:title", async (req, res, next) => {
       modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
       res.send(modifiedHtml);
-
-      incrementReadCount(doc.id);
     });
   } catch (error) {
     const log = {
@@ -316,7 +347,7 @@ app.get("/:author", async (req, res, next) => {
   try {
     const authorParam = req.params.author;
 
-    const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).orderBy("read_count", "desc").get();
+    const snapshot = await db.collection("poems").where("author_slug", "==", authorParam).get();
     if (snapshot.empty) {
       const log = {
         severity: "INFO",
