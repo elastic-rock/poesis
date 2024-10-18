@@ -147,9 +147,12 @@ async function createAnalyticsEntry(req) {
         userHash: hash,
         browserName: deviceInfo.browser.name,
         browserVersion: deviceInfo.browser.version,
-        os: deviceInfo.os.name,
-        referer: req.header("Referer")
+        os: deviceInfo.os.name
       }
+      if (req.header("Referer") !== undefined) {
+        entry.referer = req.header("Referer")
+      }
+
       await t.set(db.collection("analytics").doc(), entry);
     });
   } catch (error) {
