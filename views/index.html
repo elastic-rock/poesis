@@ -15,7 +15,7 @@
     </noscript>
 
     <main class="flex flex-wrap pt-24 w-full gap-12 px-6 sm:px-20 max-w-6xl mx-auto">
-        <div id="errorPlaceholder" class="hidden w-96 flex-auto h-[480px] fade-in">
+        <div data-nosnippet id="errorPlaceholder" class="hidden w-96 flex-auto h-[480px] fade-in">
             <div class="flex flex-row items-center">
                 <svg class="shrink-0" xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
                     <path id="errorIcon" d="M248-171q-88 0-148-59T40-377q0-80 50.5-134T217-577q2-14 6.5-31.5T236-640L91-785q-9-9-9-21t9-21q9-9 21-9t21 9l707 707q9 9 9 21t-9 21q-9 9-21.5 9T797-78l-94-93H248Zm0-60h397L285-591q-11 15-14.5 34t-3.5 37h-19q-62 0-105 39.5t-43 101q0 61.5 43 105T248-231Zm216-181Zm390 210-47-47q25-17 39-38t14-50q0-43-31-73.5T755-441h-67v-81q0-88-61-147.5T478.47-729q-28.47 0-60.97 9T358-691l-42-42q36-29 77.5-42.5T478-789q111 0 190.5 79T748-520v21q72-1 122 45t50 117q0 35-16.5 73.5T854-202ZM583-470Z"/>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div data-nosnippet id="poemPlaceholder" class="w-96 flex flex-col flex-auto">
+        <div data-nosnippet id="poemPlaceholder" class="hidden w-96 flex flex-col flex-auto">
             <div class="flex flex-row gap-4 items-start">
                 <a id="title" href="" class="text-3xl min-h-[36px] hover:underline decoration-from-font"></a>
                 <p id="languageElement" class="hidden rounded-full py-1 px-2 border-white border-2 shrink-0 fade-in">EN</p>
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div id="filterPlaceholder" class="hidden h-[480px] flex-col flex-auto">
+        <div data-nosnippet id="filterPlaceholder" class="hidden h-[480px] flex-col flex-auto">
             <p class="text-xl">Filter</p>
             <div class="overflow-auto flex flex-col gap-2 py-2 h-[376px]">
                 <p class="py-2">Language</p>
@@ -84,6 +84,25 @@
                 <button id="filterConfirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                 </button>
+            </div>
+        </div>
+
+        <div data-nosnippet id="setupPlaceholder" class="hidden h-[480px] flex-col flex-auto fade-in">
+            <p class="text-3xl pb-2">Welcome to Poesis!</p>
+            <p class="text-xl font-light pb-4">Choose the languages you understand</p>
+            <div class="overflow-auto flex flex-col gap-2 py-2">
+                <div class="inline-flex items-center">
+                    <label class="flex items-center cursor-pointer relative" for="setupEn">
+                        <input id="setupEn" value="en" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded border-2 bg-transparent border-neutral-500 checked:border-white"/>
+                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        </span>
+                    </label>
+                    <label class="ml-2 select-none cursor-pointer" for="setupEn">English</label>
+                </div>
+            </div>
+            <div class="pb-2 pt-6 flex flex-row flex-wrap gap-4">
+                <button id="setupConfirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4">Confirm</button>
             </div>
         </div>
 
@@ -123,6 +142,10 @@
         const errorIcon = document.getElementById("errorIcon");
         const retryBtn = document.getElementById("retry");
         const errorBtns = document.getElementById("errorBtns");
+
+        const setupPlaceholder = document.getElementById("setupPlaceholder");
+        const setupLanguageCheckboxes = document.querySelectorAll('input[name="setupLanguage"]');
+        const setupConfirmBtn = document.getElementById("setupConfirm");
 
         let readMoreUrl = "";
         let previousIndex;
@@ -215,7 +238,18 @@
             }
         }
 
-        fetchRandomPoem();
+        if (localStorage.getItem("languageFilter") === null) {
+            setupPlaceholder.classList.remove("hidden");
+        } else {
+            fetchRandomPoem();
+        }
+
+        setupConfirmBtn.addEventListener("click", (event) => {
+            const values = Array.from(setupLanguageCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            localStorage.setItem("languageFilter", JSON.stringify(values));
+            setupPlaceholder.classList.add("hidden");
+            fetchRandomPoem();
+        });
 
         reloadBtn.addEventListener("click", (event) => {
             reloadBtn.classList.replace("inline-flex", "hidden");
