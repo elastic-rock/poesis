@@ -56,6 +56,39 @@ app.get('/_ah/warmup', async (req, res) => {
   }
 });
 
+app.get("/tasks/update-salt", async (req, res) => {
+  try {
+    console.log(req.header("X-Appengine-Cron"));
+    if (req.header("X-Appengine-Cron") !== "true") {
+      const log = {
+        severity: "WARNING",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Cron request could not be validated at /tasks/update-salt"
+      }
+      console.log(JSON.stringify(log));
+      res.sendStatus(403);
+      return
+    }
+    const salt = crypto.randomBytes(32).toString("hex");
+    await db.collection("operation").doc("analytics").update({salt: salt});
+    res.sendStatus(200);
+    const log = {
+      severity: "INFO",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: "Analytics salt updated"
+    }
+    console.log(JSON.stringify(log));
+  } catch (error) {
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Caught error at /tasks/update-salt: ${error}`
+    }
+    console.log(JSON.stringify(log));
+    res.sendStatus(500);
+  }
+});
+
 app.use((req, res, next) => {
   try {
     const nonce = crypto.randomBytes(16).toString('base64');
@@ -84,12 +117,18 @@ app.use((req, res, next) => {
   }
 });
 
-async function createAnalyticsEntry(req, res) {
+async function createAnalyticsEntry(req) {
   try {
     const requiredHeaders = (["X-Forwarded-For", "User-Agent"]);
     const missingHeaders = requiredHeaders.filter(header => !req.headers[header.toLowerCase()]);
     if (missingHeaders.length > 0) {
-      return res.sendStatus(400);
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Missing headers for analytics"
+      }
+      console.log(JSON.stringify(log));
+      return
     }
 
     const userAgent = req.header("User-Agent")
@@ -113,12 +152,13 @@ async function createAnalyticsEntry(req, res) {
       }
       await t.set(db.collection("analytics").doc(), entry);
     });
-
-    res.sendStatus(200);
-
   } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
+    const log = {
+      severity: "ERROR",
+      "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+      message: `Failed creating analytics entry: ${error}`
+    }
+    console.log(JSON.stringify(log));
   }
 }
 
@@ -239,7 +279,8 @@ app.get("/:author/:title", async (req, res, next) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-  
+
+  createAnalyticsEntry(req);
 });
 
 app.get("/", async (req, res) => {
@@ -255,6 +296,8 @@ app.get("/", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
+
+  createAnalyticsEntry(req);
 });
 
 app.get("/search", async (req, res) => {
@@ -311,6 +354,7 @@ app.get("/search", async (req, res) => {
     sendInternalError(req, res);
   }
   
+  createAnalyticsEntry(req);
 });
 
 app.get("/about", async (req, res) => {
@@ -326,6 +370,8 @@ app.get("/about", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
+
+  createAnalyticsEntry(req);
 });
 
 app.get("/privacy", async (req, res) => {
@@ -341,6 +387,8 @@ app.get("/privacy", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
+
+  createAnalyticsEntry(req);
 });
 
 app.get("/:author", async (req, res, next) => {
@@ -386,6 +434,8 @@ app.get("/:author", async (req, res, next) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
+
+  createAnalyticsEntry(req);
 });
 
 app.use((req, res) => {

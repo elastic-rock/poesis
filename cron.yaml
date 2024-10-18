@@ -1,0 +1,4 @@
+cron:
+- description: "daily analytics salt reset"
+  url: /tasks/update-salt
+  schedule: every day 00:00
