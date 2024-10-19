@@ -124,7 +124,9 @@ app.use(express.json());
 app.post("/api/analytics", async (req, res) => {
   try {
     const path = req.body.path
-    console.log(req.body);
+    const referrer = req.body.referrer
+    console.log(referrer);
+    
     const requiredHeaders = (["X-Forwarded-For", "User-Agent"]);
     const missingHeaders = requiredHeaders.filter(header => !req.headers[header.toLowerCase()]);
     if (missingHeaders.length > 0) {
@@ -165,8 +167,8 @@ app.post("/api/analytics", async (req, res) => {
         browserVersion: deviceInfo.browser.version,
         os: deviceInfo.os.name
       }
-      if (req.header("Referer") !== undefined) {
-        entry.referer = req.header("Referer")
+      if (referrer !== "") {
+        entry.referrer = referrer
       }
 
       await t.set(db.collection("analytics").doc(), entry);
