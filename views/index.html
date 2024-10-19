@@ -214,13 +214,13 @@
                 let fetchUrl = "";
                 const lang = JSON.parse(localStorage.getItem("languageFilter")) || [];
                 if (previousIndex !== undefined && lang.length !== 0) {
-                    fetchUrl = `/data/poem/random?ex=${previousIndex}&lang=${lang.join(",")}`
+                    fetchUrl = `/api/random-poem?ex=${previousIndex}&lang=${lang.join(",")}`
                 } else if (previousIndex !== undefined) {
-                    fetchUrl = `/data/poem/random?ex=${previousIndex}`
+                    fetchUrl = `/api/random-poem?ex=${previousIndex}`
                 } else if (lang.length !== 0) {
-                    fetchUrl = `/data/poem/random?lang=${lang.join(",")}`
+                    fetchUrl = `/api/random-poem?lang=${lang.join(",")}`
                 } else {
-                    fetchUrl = "/data/poem/random";
+                    fetchUrl = "/api/random-poem";
                 }
                 const response = await fetch(fetchUrl);
                 if (!response.ok) {

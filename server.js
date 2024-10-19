@@ -117,8 +117,14 @@ app.use((req, res, next) => {
   }
 });
 
-async function createAnalyticsEntry(req) {
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(express.json());
+
+app.post("/api/analytics", async (req, res) => {
   try {
+    const path = req.body.path
+    console.log(req.body);
     const requiredHeaders = (["X-Forwarded-For", "User-Agent"]);
     const missingHeaders = requiredHeaders.filter(header => !req.headers[header.toLowerCase()]);
     if (missingHeaders.length > 0) {
@@ -128,7 +134,17 @@ async function createAnalyticsEntry(req) {
         message: "Missing headers for analytics"
       }
       console.log(JSON.stringify(log));
-      return
+      return res.sendStatus(400);
+    }
+
+    if (path === undefined) {
+      const log = {
+        severity: "INFO",
+        "logging.googleapis.com/trace": req.header("X-Cloud-Trace-Context"),
+        message: "Missing path parameter for analytics"
+      }
+      console.log(JSON.stringify(log));
+      return res.sendStatus(400);
     }
 
     const userAgent = req.header("User-Agent")
@@ -142,7 +158,7 @@ async function createAnalyticsEntry(req) {
       const hash = crypto.createHmac("sha512", salt).update(userId).digest("hex");
       const entry = {
         country: req.header("X-Appengine-Country") || "ZZ",
-        path: req.path,
+        path: path,
         timestamp: Firestore.FieldValue.serverTimestamp(),
         userHash: hash,
         browserName: deviceInfo.browser.name,
@@ -154,6 +170,7 @@ async function createAnalyticsEntry(req) {
       }
 
       await t.set(db.collection("analytics").doc(), entry);
+      res.sendStatus(200);
     });
   } catch (error) {
     const log = {
@@ -162,12 +179,11 @@ async function createAnalyticsEntry(req) {
       message: `Failed creating analytics entry: ${error}`
     }
     console.log(JSON.stringify(log));
+    res.sendStatus(500);
   }
-}
+});
 
-app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/data/poem/random", async (req, res) => {
+app.get("/api/random-poem", async (req, res) => {
   try {
     const ex = req.query.ex || "";
     const lang = req.query.lang || "";
@@ -282,8 +298,6 @@ app.get("/:author/:title", async (req, res, next) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-
-  createAnalyticsEntry(req);
 });
 
 app.get("/", async (req, res) => {
@@ -299,8 +313,6 @@ app.get("/", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-
-  createAnalyticsEntry(req);
 });
 
 app.get("/search", async (req, res) => {
@@ -356,8 +368,6 @@ app.get("/search", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-  
-  createAnalyticsEntry(req);
 });
 
 app.get("/about", async (req, res) => {
@@ -373,8 +383,6 @@ app.get("/about", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-
-  createAnalyticsEntry(req);
 });
 
 app.get("/privacy", async (req, res) => {
@@ -390,8 +398,6 @@ app.get("/privacy", async (req, res) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-
-  createAnalyticsEntry(req);
 });
 
 app.get("/:author", async (req, res, next) => {
@@ -437,8 +443,6 @@ app.get("/:author", async (req, res, next) => {
     console.log(JSON.stringify(log));
     sendInternalError(req, res);
   }
-
-  createAnalyticsEntry(req);
 });
 
 app.use((req, res) => {
