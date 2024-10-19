@@ -125,7 +125,6 @@ app.post("/api/analytics", async (req, res) => {
   try {
     const path = req.body.path
     const referrer = req.body.referrer
-    console.log(referrer);
     
     const requiredHeaders = (["X-Forwarded-For", "User-Agent"]);
     const missingHeaders = requiredHeaders.filter(header => !req.headers[header.toLowerCase()]);
