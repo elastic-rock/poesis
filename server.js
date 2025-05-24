@@ -1,26 +1,14 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
+const crypto = require("crypto");
 const path = require("path");
-const crypto = require('crypto');
 const { MongoClient, ObjectId } = require("mongodb");
 const escape = require('escape-html');
+const { JSDOM } = require("jsdom");
 
 const client = new MongoClient(process.env.DB_URI);
 const db = client.db("poesis");
-
-function sanitize(v) {
-  if (v instanceof Object) {
-    for (var key in v) {
-      if (/^\$/.test(key)) {
-        delete v[key];
-      } else {
-        sanitize(v[key]);
-      }
-    }
-  }
-  return v;
-};
 
 const footerData = fs.readFileSync(path.join(__dirname, "components", "footer.html"), "utf-8");
 const navbarData = fs.readFileSync(path.join(__dirname, "components", "navbar.html"), "utf-8");
@@ -44,13 +32,40 @@ const securityData = fs.readFileSync(path.join(__dirname, "views", "security.htm
 const licenseData = fs.readFileSync(path.join(__dirname, "views", "license.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const contributeData = fs.readFileSync(path.join(__dirname, "views", "contribute.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 
+function sanitize(v) {
+  if (v instanceof Object) {
+    for (var key in v) {
+      if (/^\$/.test(key)) {
+        delete v[key];
+      } else {
+        sanitize(v[key]);
+      }
+    }
+  }
+  return v;
+};
+
+function generateCSPHash(scriptContent) {
+    return `'sha256-${crypto.createHash('sha256').update(scriptContent, 'utf8').digest('base64')}'`;
+}
+
+function extractScriptsAndGenerateHashes(htmlContent) {
+    const dom = new JSDOM(htmlContent);
+    const scripts = [...dom.window.document.querySelectorAll('script:not([src])')];
+
+    return scripts.map(script => generateCSPHash(script.textContent));
+}
+
+const hashes1 = extractScriptsAndGenerateHashes(navbarData);
+const hashes2 = extractScriptsAndGenerateHashes(indexData);
+const hashes3 = extractScriptsAndGenerateHashes(poemData);
+
+const allHashes = [...new Set([...hashes1, ...hashes2, ...hashes3])];
+
 app.use((req, res, next) => {
-  try {
-    const nonce = crypto.randomBytes(16).toString('base64');
-    res.locals.nonce = nonce;
-    
+  try {  
     res.set("Cache-Control", "no-cache, public");
-    res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' 'nonce-${nonce}' https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
+    res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' ${allHashes.join(' ')} https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
     res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
     res.set("X-Content-Type-Options", "nosniff");
     res.set("X-Frame-Options", "DENY");
@@ -71,8 +86,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 function sendInternalError(req, res) {
   try {
-    let modifiedHtml = internalErrorData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.status(500).send(modifiedHtml);
+    res.status(500).send(internalErrorData);
   } catch (error) {
     console.error(`Caught error at sendInternalError(): ${error}`);
     res.sendStatus(500);
@@ -154,7 +168,6 @@ app.get("/:author/poem/:title", async (req, res, next) => {
     modifiedHtml = modifiedHtml.replace("{{author_slug}}", data.author.slug);
     modifiedHtml = modifiedHtml.replace("{{info_pairs}}", infoPairs);
     modifiedHtml = modifiedHtml.replace("{{license_info}}", licenseInfo);
-    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
     res.send(modifiedHtml);
   } catch (error) {
@@ -165,8 +178,7 @@ app.get("/:author/poem/:title", async (req, res, next) => {
 
 app.get("/", async (req, res) => {
   try {
-    let modifiedHtml = indexData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(indexData);
   } catch (error) {
     console.error(`Caught error at /: ${error}`);
     sendInternalError(req, res);
@@ -213,7 +225,6 @@ app.get("/search", async (req, res) => {
     } else {
       modifiedHtml = modifiedHtml.replace("{{heading}}", "Try searching for something")
     }
-    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
     res.send(modifiedHtml);
   } catch (error) {
@@ -224,8 +235,7 @@ app.get("/search", async (req, res) => {
 
 app.get("/about", async (req, res) => {
   try {
-    let modifiedHtml = aboutData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(aboutData);
   } catch (error) {
     console.error(`Caught error at /about: ${error}`);
     sendInternalError(req, res);
@@ -234,8 +244,7 @@ app.get("/about", async (req, res) => {
 
 app.get("/privacy", async (req, res) => {
   try {
-    let modifiedHtml = privacyData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(privacyData);
   } catch (error) {
     console.error(`Caught error at /privacy: ${error}`);
     sendInternalError(req, res);
@@ -244,8 +253,7 @@ app.get("/privacy", async (req, res) => {
 
 app.get("/contact", async (req, res) => {
   try {
-    let modifiedHtml = contactData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(contactData);
   } catch (error) {
     console.error(`Caught error at /contact: ${error}`);
     sendInternalError(req, res);
@@ -254,8 +262,7 @@ app.get("/contact", async (req, res) => {
 
 app.get("/security", async (req, res) => {
   try {
-    let modifiedHtml = securityData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(securityData);
   } catch (error) {
     console.error(`Caught error at /security: ${error}`);
     sendInternalError(req, res);
@@ -264,8 +271,7 @@ app.get("/security", async (req, res) => {
 
 app.get("/license", async (req, res) => {
   try {
-    let modifiedHtml = licenseData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(licenseData);
   } catch (error) {
     console.error(`Caught error at /license: ${error}`);
     sendInternalError(req, res);
@@ -274,8 +280,7 @@ app.get("/license", async (req, res) => {
 
 app.get("/contribute", async (req, res) => {
   try {
-    let modifiedHtml = contributeData.replace(/{{nonce}}/g, res.locals.nonce)
-    res.send(modifiedHtml);
+    res.send(contributeData);
   } catch (error) {
     console.error(`Caught error at /contribute: ${error}`);
     sendInternalError(req, res);
@@ -358,7 +363,6 @@ app.get("/:author", async (req, res, next) => {
       modifiedHtml = modifiedHtml.replace("{{range}}", "");
     }
     modifiedHtml = modifiedHtml.replace(/{{author}}/g, authorResult.name);
-    modifiedHtml = modifiedHtml.replace(/{{nonce}}/g, res.locals.nonce);
     
     res.send(modifiedHtml);
   } catch (error) {
@@ -369,8 +373,7 @@ app.get("/:author", async (req, res, next) => {
 
 app.use((req, res) => {
   try {
-    let modifiedHtml = notFoundData.replace(/{{nonce}}/g, res.locals.nonce);
-    res.status(404).send(modifiedHtml);
+    res.status(404).send(notFoundData);
   } catch (error) {
     console.error(`Caught error at 404 middleware: ${error}`);
     sendInternalError(req, res);
