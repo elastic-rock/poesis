@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{author}} - Poesis</title>
+    {{head}}
+    <meta name="description" content="Discover all poems by {{author}} available on Poesis.">
+</head>
+<body class="min-h-screen bg-neutral-900 text-white text-start">
+
+    {{navbar}}
+
+    <main class="pt-24 w-full px-6 sm:px-20 max-w-7xl mx-auto fade-in">
+        <h1 class="text-3xl">{{author}}{{range}}</h1>
+        <p class="py-2 pb-6 font-light">This is a collection of all the poems by {{author}} currently available on Poesis</p>
+        <div class="flex flex-wrap w-full gap-8">{{snippets}}</div>
+    </main>
+
+    {{footer}}
+
+</body>
+</html>
