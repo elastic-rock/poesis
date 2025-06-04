@@ -150,7 +150,7 @@ app.get("/:author/poem/:title", async (req, res, next) => {
     }
 
     let licenseInfo = "";
-    licenseInfo = licenseInfoData.replace("{{license_info}}", "\"{{title}}\" is sourced{{adapted}} from {{source}} and licensed under {{license}}")
+    licenseInfo = licenseInfoData.replace("{{license_info}}", "This poem is sourced{{adapted}} from {{source}}\nLicensed under {{license}}")
     if (data.source.license === "CC BY-SA 4.0") {
       licenseInfo = licenseInfo.replace("{{license}}", licenseInfoLinkData.replace("{{href}}", "https://creativecommons.org/licenses/by-sa/4.0/").replace("{{text}}", "CC BY-SA 4.0"))
     }
@@ -159,7 +159,6 @@ app.get("/:author/poem/:title", async (req, res, next) => {
     } else {
       licenseInfo = licenseInfo.replace("{{adapted}}", "")
     }
-    licenseInfo = licenseInfo.replace("{{title}}", data.title)
     licenseInfo = licenseInfo.replace("{{source}}", licenseInfoLinkData.replace("{{href}}", data.source.link).replace("{{text}}", data.source.name))
 
     let modifiedHtml = poemData.replace(/{{title}}/g, data.title);
