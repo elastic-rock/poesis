@@ -116,7 +116,7 @@
             <div class="overflow-auto flex flex-col gap-2 py-2">
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupEn">
                     <div class="flex items-center relative">
-                        <input id="setupEn" value="en" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
+                        <input id="setupEn" value="en" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
                         <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                             <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
@@ -126,7 +126,7 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupFr">
                     <div class="flex items-center relative">
-                        <input id="setupFr" value="fr" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
+                        <input id="setupFr" value="fr" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
                         <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                             <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
@@ -136,7 +136,7 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupDe">
                     <div class="flex items-center relative">
-                        <input id="setupDe" value="de" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
+                        <input id="setupDe" value="de" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
                         <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                             <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
@@ -318,6 +318,17 @@
             localStorage.setItem("languageFilter", JSON.stringify(values));
             filterPlaceholder.classList.replace("flex", "hidden");
             poemPlaceholder.classList.replace("hidden", "flex");
+            reloadBtn.classList.replace("inline-flex", "hidden");
+            expandBtn.classList.replace("inline-flex", "hidden");
+            filterBtn.classList.replace("inline-flex", "hidden");
+            authorElement.textContent = "";
+            authorElement.classList.remove('fade-in');
+            titleElement.textContent = "";
+            titleElement.classList.remove('fade-in');
+            poemElement.textContent = "";
+            poemContainerElement.classList.remove("fade-in");
+            languageElement.classList.add("hidden");
+            fetchRandomPoem();
         });
 
         filterDissmissBtn.addEventListener("click", (event) => {
