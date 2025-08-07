@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     {{head}}
     <meta name="description" content="Poesis is a free online collection of poems sourced by the community for the community and licensed under Creative Commons">
 </head>
-<body class="min-h-screen bg-neutral-900 text-white text-start">
+<body class="min-h-screen dark:bg-neutral-900 dark:text-white text-start">
 
     {{navbar}}
 
@@ -18,14 +18,14 @@
     <main class="flex flex-wrap pt-24 w-full gap-12 px-6 sm:px-20 max-w-7xl mx-auto">
         <div data-nosnippet id="errorPlaceholder" class="hidden w-96 flex-auto h-[480px] fade-in">
             <div class="flex flex-row items-center">
-                <svg class="shrink-0" xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+                <svg class="shrink-0 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px">
                     <path id="errorIcon" d="M248-171q-88 0-148-59T40-377q0-80 50.5-134T217-577q2-14 6.5-31.5T236-640L91-785q-9-9-9-21t9-21q9-9 21-9t21 9l707 707q9 9 9 21t-9 21q-9 9-21.5 9T797-78l-94-93H248Zm0-60h397L285-591q-11 15-14.5 34t-3.5 37h-19q-62 0-105 39.5t-43 101q0 61.5 43 105T248-231Zm216-181Zm390 210-47-47q25-17 39-38t14-50q0-43-31-73.5T755-441h-67v-81q0-88-61-147.5T478.47-729q-28.47 0-60.97 9T358-691l-42-42q36-29 77.5-42.5T478-789q111 0 190.5 79T748-520v21q72-1 122 45t50 117q0 35-16.5 73.5T854-202ZM583-470Z"/>
                 </svg>
                 <p id="errorText" class="ps-4 whitespace-pre-line"></p>
             </div>
             <div id="errorBtns" class="h-[76px] pt-8 flex flex-row gap-4">
-                <button id="retry" class="inline-flex justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 cursor-pointer">
-                    <svg class="pe-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <button id="retry" class="inline-flex justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 cursor-pointer">
+                    <svg class="pe-1 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
                         <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-70q0-17 11.5-28.5T760-800q17 0 28.5 11.5T800-760v200q0 17-11.5 28.5T760-520H560q-17 0-28.5-11.5T520-560q0-17 11.5-28.5T560-600h128q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q68 0 124.5-34.5T692-367q8-14 22.5-19.5t29.5-.5q16 5 23 21t-1 30q-41 80-117 128t-169 48Z"/>
                     </svg>
                     Retry
@@ -36,29 +36,29 @@
         <div data-nosnippet id="poemPlaceholder" class="hidden w-full sm:w-96 flex-col flex-auto">
             <div class="flex flex-row gap-4 items-start">
                 <a id="title" href="" class="text-3xl min-h-[36px] hover:underline decoration-from-font"></a>
-                <p id="languageElement" class="hidden rounded-full py-1 px-2 border-white border-2 shrink-0 fade-in">EN</p>
+                <p id="languageElement" class="hidden rounded-full py-1 px-2 border-black dark:border-white dark:hover:border-white border-2 shrink-0 fade-in">EN</p>
             </div>
             <a id="author" href="" class="text-lg font-light pt-1 pb-2 min-h-[40px] hover:underline decoration-from-font"></a>
             <div id="poemContainer" class="my-4 h-[328px] sm:h-[312px] pb-4 sm:pb-0 w-full overflow-x-auto overflow-y-hidden">
                 <div class="relative h-full w-max">
-                    <div class="absolute w-full inset-0 z-20 bg-linear-to-b from-transparent from-80% to-neutral-900 pointer-events-none"></div>
+                    <div class="absolute w-full inset-0 z-20 dark:bg-linear-to-b from-transparent from-80% to-neutral-900 pointer-events-none"></div>
                     <p id="poem" class="z-10 whitespace-pre w-max"></p>
                 </div>
             </div>
             <div class="py-2 flex flex-row flex-wrap gap-4 min-h-[60px]">
-                <button id="filter" aria-label="Filter" class="hidden text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <button id="filter" aria-label="Filter" class="hidden text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 fade-in cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-black dark:fill-white">
                         <path d="M480-120q-17 0-28.5-11.5T440-160v-160q0-17 11.5-28.5T480-360q17 0 28.5 11.5T520-320v40h280q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200H520v40q0 17-11.5 28.5T480-120Zm-320-80q-17 0-28.5-11.5T120-240q0-17 11.5-28.5T160-280h160q17 0 28.5 11.5T360-240q0 17-11.5 28.5T320-200H160Zm160-160q-17 0-28.5-11.5T280-400v-40H160q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h120v-40q0-17 11.5-28.5T320-600q17 0 28.5 11.5T360-560v160q0 17-11.5 28.5T320-360Zm160-80q-17 0-28.5-11.5T440-480q0-17 11.5-28.5T480-520h320q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H480Zm160-160q-17 0-28.5-11.5T600-640v-160q0-17 11.5-28.5T640-840q17 0 28.5 11.5T680-800v40h120q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680H680v40q0 17-11.5 28.5T640-600Zm-480-80q-17 0-28.5-11.5T120-720q0-17 11.5-28.5T160-760h320q17 0 28.5 11.5T520-720q0 17-11.5 28.5T480-680H160Z"/>
                     </svg>
                 </button>
-                <button id="reload" class="hidden justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in cursor-pointer">
-                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <button id="reload" class="hidden justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 fade-in cursor-pointer">
+                    <svg class="me-1 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
                         <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-70q0-17 11.5-28.5T760-800q17 0 28.5 11.5T800-760v200q0 17-11.5 28.5T760-520H560q-17 0-28.5-11.5T520-560q0-17 11.5-28.5T560-600h128q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q68 0 124.5-34.5T692-367q8-14 22.5-19.5t29.5-.5q16 5 23 21t-1 30q-41 80-117 128t-169 48Z"/>
                     </svg>
                     Reload
                 </button>
-                <button id="expand" class="hidden text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 fade-in cursor-pointer">
-                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <button id="expand" class="hidden text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 fade-in cursor-pointer">
+                    <svg class="me-1 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
                         <path d="m480-453-95-95q-11-11-27.5-11T329-548q-12 12-12 28.5t12 28.5l123 123q12 12 28 12t28-12l124-124q12-12 11.5-28T631-548q-12-11-28-11.5T575-548l-95 95Zm0 373q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
                     </svg>
                     Expand
@@ -72,9 +72,9 @@
                 <p class="py-2">Language</p>
                 <label class="inline-flex items-center select-none cursor-pointer" for="en">
                     <div class="flex items-center relative">
-                        <input id="en" value="en" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="en" value="en" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">English</p>
@@ -82,9 +82,9 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="fr">
                     <div class="flex items-center relative">
-                        <input id="fr" value="fr" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="fr" value="fr" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">French</p>
@@ -92,20 +92,20 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="de">
                     <div class="flex items-center relative">
-                        <input id="de" value="de" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="de" value="de" name="language" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">German</p>
                 </label>
             </div>
             <div class="pb-2 pt-6 flex flex-row flex-wrap gap-4">
-                <button id="filterDissmiss" aria-label="Dissmiss" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+                <button id="filterDissmiss" aria-label="Dissmiss" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-black dark:fill-white"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
                 </button>
-                <button id="filterConfirm" aria-label="Confirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                <button id="filterConfirm" aria-label="Confirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-black dark:fill-white"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                 </button>
             </div>
         </div>
@@ -116,9 +116,9 @@
             <div class="overflow-auto flex flex-col gap-2 py-2">
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupEn">
                     <div class="flex items-center relative">
-                        <input id="setupEn" value="en" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="setupEn" value="en" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">English</p>
@@ -126,9 +126,9 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupFr">
                     <div class="flex items-center relative">
-                        <input id="setupFr" value="fr" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="setupFr" value="fr" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">French</p>
@@ -136,16 +136,16 @@
 
                 <label class="inline-flex items-center select-none cursor-pointer" for="setupDe">
                     <div class="flex items-center relative">
-                        <input id="setupDe" value="de" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-white"/>
-                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#FFFFFF"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                        <input id="setupDe" value="de" name="setupLanguage" type="checkbox" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded-sm border-2 bg-transparent border-neutral-500 checked:border-black dark:checked:border-white"/>
+                        <span class="absolute dark:text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <svg class="h-3.5 w-3.5 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
                         </span>
                     </div>
                     <p class="ml-2">German</p>
                 </label>
             </div>
             <div class="pb-2 pt-6 flex flex-row flex-wrap gap-4">
-                <button id="setupConfirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4 cursor-pointer">Confirm</button>
+                <button id="setupConfirm" class="inline-flex text-nowrap justify-center items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4 cursor-pointer">Confirm</button>
             </div>
         </div>
 
@@ -153,8 +153,8 @@
             <div id="sidepane" class="max-w-sm hidden fade-in">
                 <h3 class="text-xl">About Poesis</h3>
                 <p class="pt-4 pb-6">Poesis is a free online collection of poems sourced by the community for the community. Be surprised by a random poem or delve deep into the depths of the site to uncover known and hidden gems.</p>
-                <a href="/about" class="inline-flex items-center rounded-full border-neutral-500 border-2 hover:border-white py-2 px-4">
-                    <svg class="pe-1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-280q17 0 28.5-11.5T520-320v-160q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480v160q0 17 11.5 28.5T480-280Zm0-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+                <a href="/about" class="inline-flex items-center rounded-full border-neutral-500 border-2 hover:border-black dark:hover:border-white py-2 px-4">
+                    <svg class="pe-1 fill-black dark:fill-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-280q17 0 28.5-11.5T520-320v-160q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480v160q0 17 11.5 28.5T480-280Zm0-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
                     About
                 </a>
             </div>
