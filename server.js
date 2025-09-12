@@ -66,7 +66,7 @@ app.use((req, res, next) => {
   try {  
     res.set("Cache-Control", "no-cache, public");
     res.set("Content-Security-Policy", `default-src 'none'; script-src 'self' 'strict-dynamic' 'unsafe-inline' ${allHashes.join(' ')} https: http:; style-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; manifest-src 'self'; require-trusted-types-for 'script';`);
-    res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    res.set("Strict-Transport-Security", "max-age=0; includeSubDomains");
     res.set("X-Content-Type-Options", "nosniff");
     res.set("X-Frame-Options", "DENY");
     res.set("X-Xss-Protection", "0");
