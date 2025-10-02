@@ -43,7 +43,7 @@ function sanitize(v) {
     }
   }
   return v;
-};
+}
 
 function generateCSPHash(scriptContent) {
     return `'sha256-${crypto.createHash('sha256').update(scriptContent, 'utf8').digest('base64')}'`;
@@ -149,7 +149,7 @@ app.get("/:author/poem/:title", async (req, res, next) => {
       infoPairs += infoPairData.replace("{{heading}}", "Published").replace("{{content}}", data.published);
     }
 
-    let licenseInfo = "";
+    let licenseInfo;
     licenseInfo = licenseInfoData.replace("{{license_info}}", "This poem is sourced{{adapted}} from {{source}}\nLicensed under {{license}}")
     if (data.source.license === "CC BY-SA 4.0") {
       licenseInfo = licenseInfo.replace("{{license}}", licenseInfoLinkData.replace("{{href}}", "https://creativecommons.org/licenses/by-sa/4.0/").replace("{{text}}", "CC BY-SA 4.0"))
@@ -288,10 +288,10 @@ app.get("/contribute", async (req, res) => {
 
 app.get("/sitemap.xml", async (req, res) => {
   try {
-    const hostname = "https://poesis.io"
+    const hostname = "https://poesis.davidweis.eu"
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    xml += `<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
     const poemSort = { "author.slug": 1, slug: 1 };
     const poemResult = await db.collection("poems").find({}, { "author.slug": 1, slug: 1, _id: 0 }).sort(poemSort).toArray();

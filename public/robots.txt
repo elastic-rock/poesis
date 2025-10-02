@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https:/poesis.io/sitemap.xml
+Sitemap: https:/poesis.davidweis.eu/sitemap.xml

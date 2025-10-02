@@ -16,7 +16,7 @@ When submitting the poem, you should state why you think the poem is in the publ
 If the poem is still protected and you happen to be know the copyright holder, you can get them in touch with us if they are interested. However, these poems would also have to be donated to the public under the CC BY-SA 4.0, so you they would not be giving exclusive use on just Poesis.
 
 ### Sending the poems
-Once you have checked (or at least tried) to determine if a poem is eligible, you can send its name, author, and a link to a public digital copy of it to hello@poesis.io. Your submission will be reviewed and if everything is alright, it will be included on the site. This might take a very long time, so your patience is kindly thanked in advance.
+Once you have checked (or at least tried) to determine if a poem is eligible, you can send its name, author, and a link to a public digital copy of it to hi@davidweis.eu. Your submission will be reviewed and if everything is alright, it will be included on the site. This might take a very long time, so your patience is kindly thanked in advance.
 
 ## Contribute to the development of the website
 If you would like to contribute to the development of the website, you can open a pull request on GitHub, but before you make any significant changes, discuss them beforehand so you don't work uselessly. If you have found a bug or would like to propose a new feature, you can open an issue.
