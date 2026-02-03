@@ -2,13 +2,13 @@
     "name": "poesis",
     "dependencies": {
         "escape-html": "1.0.3",
-        "express": "5.1.0",
-        "jsdom": "27.0.0",
-        "mongodb": "6.19.0"
+        "express": "5.2.1",
+        "jsdom": "28.0.0",
+        "mongodb": "7.0.0"
     },
     "devDependencies": {
-        "@tailwindcss/cli": "4.1.13",
-        "tailwindcss": "4.1.13"
+        "@tailwindcss/cli": "4.1.18",
+        "tailwindcss": "4.1.18"
     },
     "scripts": {
         "start": "node server.js"
