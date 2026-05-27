@@ -4,7 +4,8 @@
         "escape-html": "1.0.3",
         "express": "5.2.1",
         "jsdom": "29.1.1",
-        "mongodb": "7.2.0"
+        "mongodb": "7.2.0",
+        "mongo-sanitize": "1.1.0"
     },
     "devDependencies": {
         "@tailwindcss/cli": "4.3.0",

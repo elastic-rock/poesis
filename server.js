@@ -6,6 +6,7 @@ const path = require("path");
 const { MongoClient, ObjectId } = require("mongodb");
 const escape = require('escape-html');
 const { JSDOM } = require("jsdom");
+const sanitize = require('mongo-sanitize');
 
 const client = new MongoClient(process.env.DB_URI);
 const db = client.db("poesis");
@@ -31,19 +32,6 @@ const contactData = fs.readFileSync(path.join(__dirname, "views", "contact.html"
 const securityData = fs.readFileSync(path.join(__dirname, "views", "security.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const licenseData = fs.readFileSync(path.join(__dirname, "views", "license.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
 const contributeData = fs.readFileSync(path.join(__dirname, "views", "contribute.html"), "utf-8").replace("{{footer}}", footerData).replace("{{navbar}}", navbarData).replace("{{head}}", headData);
-
-function sanitize(v) {
-  if (v instanceof Object) {
-    for (var key in v) {
-      if (/^\$/.test(key)) {
-        delete v[key];
-      } else {
-        sanitize(v[key]);
-      }
-    }
-  }
-  return v;
-}
 
 function generateCSPHash(scriptContent) {
     return `'sha256-${crypto.createHash('sha256').update(scriptContent, 'utf8').digest('base64')}'`;
