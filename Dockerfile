@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:26-alpine
 ENV NODE_ENV production
 WORKDIR /usr/src/app
 RUN --mount=type=bind,source=package.json,target=package.json \
